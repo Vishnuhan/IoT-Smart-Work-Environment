@@ -5,7 +5,7 @@ import 'firebase/compat/firestore';
 
 const firebaseConfig = {
 
-    apiKey: "AIzaSyCbmRSTDBFUVftIitr5pp1--9aUjLVXQzQ",
+    apiKey: "ChangeThisToAPIKey",
   
     authDomain: "desksynergy-e97fb.firebaseapp.com",
   
