@@ -1,17 +1,47 @@
-// BottomTabNavigator.js
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import PMPage from './PMPage'; // Import your PMPage component
-import BookRoomPage from './BookRoomPage'; // Import your BookRoomPage component
-import AccountPage from './AccountPage'; // Import your AccountPage component
+import Icon from 'react-native-vector-icons/MaterialIcons'; // Import icons from react-native-vector-icons
+import PMPage from './PMPage';
+import BookRoomPage from './BookRoomPage';
+import AccountPage from './AccountPage';
 
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = () => (
-  <Tab.Navigator>
-    <Tab.Screen name="PM" component={PMPage} />
-    <Tab.Screen name="Book Room" component={BookRoomPage} />
-    <Tab.Screen name="Account" component={AccountPage} />
+  <Tab.Navigator
+    tabBarOptions={{
+      activeTintColor: '#3498db',
+      inactiveTintColor: 'gray',
+      labelStyle: {
+        fontSize: 14,
+        fontWeight: 'bold',
+      },
+      style: {
+        backgroundColor: '#f2f2f2',
+      },
+    }}
+  >
+    <Tab.Screen
+      name="PM Tracking"
+      component={PMPage}
+      options={{
+        tabBarIcon: ({ color, size }) => <Icon name="track-changes" size={size} color={color} />,
+      }}
+    />
+    <Tab.Screen
+      name="Book a Room"
+      component={BookRoomPage}
+      options={{
+        tabBarIcon: ({ color, size }) => <Icon name="event-available" size={size} color={color} />,
+      }}
+    />
+    <Tab.Screen
+      name="Account"
+      component={AccountPage}
+      options={{
+        tabBarIcon: ({ color, size }) => <Icon name="account-circle" size={size} color={color} />,
+      }}
+    />
   </Tab.Navigator>
 );
 

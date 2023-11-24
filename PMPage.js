@@ -1,4 +1,4 @@
-// PMPage.js
+  // PMPage.js
 import React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
@@ -54,8 +54,8 @@ const TasksPage = ({ route }) => {
 
   return (
     <View>
-      <Text>Tasks for Phase: {phase.name}</Text>
-      <Text>Project: {projectName}</Text>
+      <Text style={styles.mytext}>Tasks for Phase: {phase.name}</Text>
+      <Text style={styles.mytext}>Project: {projectName}</Text>
       <FlatList
         data={tasksForPhase}
         keyExtractor={(item, index) => index.toString()}
@@ -84,7 +84,7 @@ const ProjectDetailsScreen = ({ route }) => {
 
   return (
     <View>
-      <Text>Project Phases</Text>
+      <Text style={styles.mytext}>Project Phases</Text>
       <FlatList
         data={PHASES}
         keyExtractor={(item) => item.name}
@@ -99,7 +99,7 @@ const AllScreen = () => {
 
   return (
     <View>
-      <Text>All Projects</Text>
+      <Text style={styles.mytext}>All Projects</Text>
       <FlatList
         data={projects}
         keyExtractor={(item) => item.Name}
@@ -114,7 +114,7 @@ const OngoingScreen = () => {
 
   return (
     <View>
-      <Text>Ongoing Projects</Text>
+      <Text style={styles.mytext}>Ongoing Projects</Text>
       <FlatList
         data={projects.filter((project) => project.Percentage_Complete < 100)}
         keyExtractor={(item) => item.Name}
@@ -129,7 +129,7 @@ const CompletedScreen = () => {
 
   return (
     <View>
-      <Text>Completed Projects</Text>
+      <Text style={styles.mytext}>Completed Projects</Text>
       <FlatList
         data={projects.filter((project) => project.Percentage_Complete === 100)}
         keyExtractor={(item) => item.Name}
@@ -157,10 +157,14 @@ const PMTopTabNavigator = () => (
 
 const styles = StyleSheet.create({
   projectCard: {
-    backgroundColor: '#ececec',
+    backgroundColor: 'dodgerblue',
     padding: 10,
     margin: 5,
     borderRadius: 5,
+  },
+  mytext: {
+    fontWeight:'bold',
+    marginLeft:'10px'
   },
 });
 

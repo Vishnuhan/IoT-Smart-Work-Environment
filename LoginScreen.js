@@ -1,6 +1,6 @@
 // LoginScreen.js
 import React, { useState } from 'react';
-import { View, TextInput, Button } from 'react-native';
+import { View, TextInput, Button, StyleSheet } from 'react-native';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from './firebase';
 import { useNavigation } from '@react-navigation/native';
@@ -18,7 +18,7 @@ const LoginScreen = () => {
       // Navigate to the BottomTabNavigator upon successful login
       navigation.navigate('BottomTabNavigator');
     } catch (error) {
-      console.log("Invalid Credentials")
+      console.log('Invalid Credentials');
     }
   };
 
@@ -29,9 +29,15 @@ const LoginScreen = () => {
 
   // Render the login form if the user is not logged in
   return (
-    <View>
-      <TextInput placeholder="Email" value={email} onChangeText={setEmail} />
+    <View style={styles.container}>
       <TextInput
+        style={styles.input}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+      />
+      <TextInput
+        style={styles.input}
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
@@ -41,5 +47,23 @@ const LoginScreen = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  input: {
+    height: 40,
+    width: '100%',
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 12,
+    paddingLeft: 8,
+  },
+  
+});
 
 export default LoginScreen;
