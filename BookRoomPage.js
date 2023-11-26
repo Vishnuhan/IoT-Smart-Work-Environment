@@ -1,6 +1,7 @@
 // BookRoomPage.js
 import React, { useState } from 'react';
-import { View, Text, Picker, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 
 const AVAILABLE_ROOMS = ['Room 101', 'Room 102', 'Room 103'];
 const TIME_SLOTS = ['9:00 AM - 10:00 AM', '10:00 AM - 11:00 AM', '11:00 AM - 12:00 PM'];
