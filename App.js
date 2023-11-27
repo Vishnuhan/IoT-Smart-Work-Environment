@@ -1,17 +1,3 @@
-
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import LoginScreen from './LoginScreen';
-import RegisterScreen from './RegisterScreen';
-const App = () => (
-  <NavigationContainer>
-    <LoginScreen />
-  </NavigationContainer>
-);
-
-export default App;
-
-/*
 import React, { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
 import axios from 'axios';
@@ -25,7 +11,7 @@ const App = () => {
       try {
         // Use the local IP address of your computer and the port your Express server is running on
         const response = await axios.get(`http://${centralServerIPAddress}:3001/api/data`);
-        // setData(response.data);
+        setData(response.data);
         console.log("nothing")
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -43,4 +29,3 @@ const App = () => {
 };
 
 export default App;
-*/
