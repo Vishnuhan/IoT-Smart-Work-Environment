@@ -5,7 +5,7 @@ import LoginScreen from './LoginScreen';
 import RegisterScreen from './RegisterScreen';
 const App = () => (
   <NavigationContainer>
-    <RegisterScreen />
+    <LoginScreen />
   </NavigationContainer>
 );
 
