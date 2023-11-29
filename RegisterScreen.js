@@ -1,39 +1,45 @@
 // RegisterScreen.js
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet } from 'react-native';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from './firebase';
+import { View, Text, Button, TextInput, StyleSheet } from 'react-native';
+import axios from 'axios';
 
 const RegisterScreen = () => {
-  const [email, setEmail] = useState('');
+  const [employeeName, setEmployeeName] = useState('');
+  const [employeeId, setEmployeeId] = useState('');
   const [password, setPassword] = useState('');
-  const [user] = useAuthState(auth);
 
   const handleRegister = async () => {
     try {
-      await auth.createUserWithEmailAndPassword(email, password);
-      // Optionally, you can sign in the user automatically after registration
-      // await auth.signInWithEmailAndPassword(email, password);
-      // Navigate to the next screen upon successful registration
+      const registrationData = { employeeName, employeeId, password };
+      const response = await axios.post('http://10.17.144.240:3001/auth/register', registrationData);
+      console.log('User registered successfully:', response.data);
+      // Optionally, you can handle navigation or other logic after successful registration
     } catch (error) {
-      console.error(error);
+      console.error('Error registering user:', error);
     }
   };
 
   return (
     <View style={styles.container}>
+      <Text>Registration</Text>
       <TextInput
         style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
+        placeholder="Employee Name"
+        value={employeeName}
+        onChangeText={(text) => setEmployeeName(text)}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Employee ID"
+        value={employeeId}
+        onChangeText={(text) => setEmployeeId(text)}
       />
       <TextInput
         style={styles.input}
         placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
         secureTextEntry
+        value={password}
+        onChangeText={(text) => setPassword(text)}
       />
       <Button title="Register" onPress={handleRegister} />
     </View>
