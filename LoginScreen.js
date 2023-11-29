@@ -1,47 +1,44 @@
 // LoginScreen.js
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet } from 'react-native';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from './firebase';
-import { useNavigation } from '@react-navigation/native';
-import BottomTabNavigator from './BottomTabNavigator';
+import { View, Text, Button, TextInput, StyleSheet } from 'react-native';
+import axios from 'axios';
 
-const LoginScreen = () => {
-  const [email, setEmail] = useState('');
+import BottomTabNavigator from './BottomTabNavigator'; // Import your BottomTabNavigator
+
+const LoginScreen = ({ navigation }) => {
+  const [employeeId, setEmployeeId] = useState('');
   const [password, setPassword] = useState('');
-  const [user] = useAuthState(auth);
-  const navigation = useNavigation();
-
+  const [loggedIn, setLoggedIn] = useState(false);
   const handleLogin = async () => {
     try {
-      await auth.signInWithEmailAndPassword(email, password);
-      // Navigate to the BottomTabNavigator upon successful login
-      navigation.navigate('BottomTabNavigator');
+      const loginData = { employeeId, password };
+      const response = await axios.post('http://10.17.144.240:3001/auth/login', loginData);
+      console.log('Login successful:', response.data);
+      setLoggedIn(true);
     } catch (error) {
-      console.log('Invalid Credentials');
+      console.error('Error logging in:', error);
     }
   };
 
-  // Render the BottomTabNavigator component if the user is logged in
-  if (user) {
+  if (loggedIn) {
     return <BottomTabNavigator />;
   }
 
-  // Render the login form if the user is not logged in
   return (
     <View style={styles.container}>
+      <Text>Login</Text>
       <TextInput
         style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
+        placeholder="employeeId"
+        value={employeeId}
+        onChangeText={(text) => setEmployeeId(text)}
       />
       <TextInput
         style={styles.input}
         placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
         secureTextEntry
+        value={password}
+        onChangeText={(text) => setPassword(text)}
       />
       <Button title="Login" onPress={handleLogin} />
     </View>
@@ -63,7 +60,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingLeft: 8,
   },
-  
 });
 
 export default LoginScreen;

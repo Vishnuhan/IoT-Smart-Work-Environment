@@ -1,46 +1,29 @@
-
+// App.js
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from './LoginScreen';
 import RegisterScreen from './RegisterScreen';
-const App = () => (
-  <NavigationContainer>
-    <RegisterScreen />
-  </NavigationContainer>
-);
 
-export default App;
-
-/*
-import React, { useEffect, useState } from 'react';
-import { View, Text } from 'react-native';
-import axios from 'axios';
+const Stack = createStackNavigator();
 
 const App = () => {
-  const [data, setData] = useState(null);
-  const centralServerIPAddress = "192.168.0.15";
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Use the local IP address of your computer and the port your Express server is running on
-        const response = await axios.get(`http://${centralServerIPAddress}:3001/api/data`);
-        setData(response.data);
-        console.log("nothing")
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
   return (
-    <View>
-      <Text>Data from the server: {data?.message}</Text>
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ headerShown: false }} // Add this line to hide the header
+        />
+        <Stack.Screen
+          name="Register"
+          component={RegisterScreen}
+          options={{ headerShown: false }} // Add this line to hide the header
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 
 export default App;
-*/
