@@ -1,6 +1,6 @@
 // LoginScreen.js
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from './firebase';
 import { useNavigation } from '@react-navigation/native';
@@ -30,11 +30,15 @@ const LoginScreen = () => {
   // Render the login form if the user is not logged in
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Welcome Back!</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
+        autoCompleteType="email"
       />
       <TextInput
         style={styles.input}
@@ -55,15 +59,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
   },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 24,
+  },
   input: {
     height: 40,
     width: '100%',
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 12,
+    borderColor: '#3498db',
+    borderBottomWidth: 1,
+    marginBottom: 16,
     paddingLeft: 8,
   },
-  
 });
 
 export default LoginScreen;
