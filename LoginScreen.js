@@ -41,6 +41,12 @@ const LoginScreen = ({ navigation }) => {
         onChangeText={(text) => setPassword(text)}
       />
       <Button title="Login" onPress={handleLogin} />
+      <div style={{marginTop: "2%"}}>
+      <Button
+        title="Register"
+        onPress={() => navigation.navigate('Register')}
+      />
+      </div>
     </View>
   );
 };

@@ -8,12 +8,13 @@ const RegisterScreen = () => {
   const [employeeId, setEmployeeId] = useState('');
   const [password, setPassword] = useState('');
 
+
   const handleRegister = async () => {
     try {
       const registrationData = { employeeName, employeeId, password };
       const response = await axios.post('http://10.17.144.240:3001/auth/register', registrationData);
       console.log('User registered successfully:', response.data);
-      // Optionally, you can handle navigation or other logic after successful registration
+
     } catch (error) {
       console.error('Error registering user:', error);
     }
