@@ -31,8 +31,15 @@ data = {
         ["API integration", "Code debugging", "Code review"],
         ["Security analysis", "Feature prioritization", "End-to-end testing"]
     ],
+    'ActiveTasks': [
+        [1, 1, 1], [1, 1, 0], [1, 1, 1],
+        [0, 1, 0], [1, 1, 1], [1, 1, 1],
+        [1, 0, 0], [1, 1, 1], [1, 1, 0],
+        [0, 1, 0], [0, 0, 1], [1, 1, 1],
+        [0, 0, 1], [1, 1, 1], [0, 0, 0]
+    ],
     'TaskWeights': [
-        [0.8, 0.5, 0.7], [0.6, 0.4, 0.9], [0.2, 0.1, 0.1],
+        [0.8, 0.5, 0.7], [0.6, 0.4, 0.9], [1, 1, 1],
         [0.7, 0.6, 0.8], [0.5, 0.7, 0.6], [0.9, 0.8, 0.4],
         [0.6, 0.7, 0.5], [0.8, 0.4, 0.6], [0.7, 0.5, 0.8],
         [0.5, 0.6, 0.7], [0.8, 0.7, 0.9], [0.6, 0.8, 0.7],
@@ -44,7 +51,7 @@ data = {
 df = pd.DataFrame(data)
 
 # New Task to be compared
-new_task_name = "Review code quality and provide feedback"
+new_task_name = "Design UI mockups"
 
 # Tokenize and remove stopwords from all task names
 stop_words = set(stopwords.words('english'))
@@ -66,9 +73,10 @@ cosine_similarities = cosine_similarity(tfidf_new_task, tfidf_matrix).flatten()
 # Calculate task relevancy for each employee
 df['TaskRelevancy'] = cosine_similarities
 
-# Calculate relative availability for each employee
+# Calculate relative availability for each employee based on the tasks they are currently working on
 df['RelativeAvailability'] = (
-    df['TaskWeights'].apply(lambda x: sum(x)) / len(df['TaskWeights'].iloc[0])
+    df.apply(lambda row: sum([row['TaskWeights'][idx] for idx in range(len(row['TasksID'])) if row['ActiveTasks'][idx] == 1]), axis=1) /
+    len(df['TaskWeights'].iloc[0])
 )  # Sum of task weights for each employee
 
 # Normalize the values for relative availability
