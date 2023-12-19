@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const User = require('./User');
 
 const app = express();
+const { exec } = require('child_process');
 
 // Express middleware and configuration
 app.use(cors());
@@ -20,6 +21,19 @@ mongoose.connect('mongodb://127.0.0.1:27017/auth');
 // API data routes
 app.get('/api/data', (req, res) => {
   res.json({ message: 'Hello from the server!' });
+});
+
+app.get('/getSuggestions', (req, res) => {
+  // Execute the Python script or provide suggestions logic
+  exec('python suggestions.py', (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error executing Python script: ${error}`);
+      return res.status(500).send('Internal Server Error');
+    }
+
+    console.log(`Python script output: ${stdout}`);
+    res.send('Suggestions retrieved successfully');
+  });
 });
 
 // Authentication routes
