@@ -12,7 +12,8 @@ const LoginScreen = ({ navigation }) => {
   const handleLogin = async () => {
     try {
       const loginData = { employeeId, password };
-      const response = await axios.post('http://10.17.144.240:3001/auth/login', loginData);
+      const response = await axios.post('http://localhost:3001/auth/login', loginData);
+      console.log(response)
       console.log('Login successful:', response.data);
       setLoggedIn(true);
     } catch (error) {
@@ -41,12 +42,6 @@ const LoginScreen = ({ navigation }) => {
         onChangeText={(text) => setPassword(text)}
       />
       <Button title="Login" onPress={handleLogin} />
-      <div style={{marginTop: "2%"}}>
-      <Button
-        title="Register"
-        onPress={() => navigation.navigate('Register')}
-      />
-      </div>
     </View>
   );
 };
