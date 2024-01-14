@@ -1,4 +1,3 @@
-  // PMPage.js
 import React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
@@ -20,9 +19,11 @@ const renderPhaseCard = (navigation, phase, projectName) => (
   <TouchableOpacity
     onPress={() => navigation.navigate('Tasks', { phase, projectName })}
   >
-    <View style={styles.projectCard}>
-      <Text>Phase: {phase.name}</Text>
-      <Text>Percentage Complete: {phase.percentage}%</Text>
+    <View style={styles.phaseCardContainer}>
+      <View style={styles.phaseCard}>
+        <Text style={styles.phaseTitle}>{phase.name}</Text>
+        <Text style={styles.phaseText}>{phase.percentage}% Completed</Text>
+      </View>
     </View>
   </TouchableOpacity>
 );
@@ -40,10 +41,12 @@ const PhasePage = ({ route }) => {
 };
 
 const renderTaskCard = (task) => (
-  <View style={styles.projectCard}>
-    <Text>Task Name: {task.TaskName}</Text>
-    <Text>Phase: {task.Phase}</Text>
-    <Text>Completion Status: {task.Complete ? 'Complete' : 'Incomplete'}</Text>
+  <View style={styles.taskCard}>
+    <Text style={styles.taskName}>Task Name: {task.TaskName}</Text>
+    <Text style={styles.phase}>Phase: {task.Phase}</Text>
+    <Text style={styles.completionStatus}>
+      Completion Status: {task.Complete ? 'Complete' : 'Incomplete'}
+    </Text>
   </View>
 );
 
@@ -70,11 +73,11 @@ const renderProjectCard = (navigation, project) => (
     onPress={() => navigation.navigate('ProjectDetails', { project, navigation })}
   >
     <View style={styles.projectCard}>
-      <Text>Name: {project.Name}</Text>
-      <Text>Percentage Complete: {project.Percentage_Complete}%</Text>
-      <Text>Team: {project.Team.join(', ')}</Text>
-      <Text>Due Date: {project.Due_Date}</Text>
-      <Text>Tasks: {project.Tasks.join(', ')}</Text>
+      <Text style={styles.cardTitle}>Name: {project.Name}</Text>
+      <Text style={styles.cardText}>Percentage Complete: {project.Percentage_Complete}%</Text>
+      <Text style={styles.cardText}>Team: {project.Team.join(', ')}</Text>
+      <Text style={styles.cardText}>Due Date: {project.Due_Date}</Text>
+      <Text style={styles.cardText}>Tasks: {project.Tasks.join(', ')}</Text>
     </View>
   </TouchableOpacity>
 );
@@ -101,6 +104,7 @@ const AllScreen = () => {
     <View>
       <Text style={styles.mytext}>All Projects</Text>
       <FlatList
+      style={{ flex: 1 }}
         data={projects}
         keyExtractor={(item) => item.Name}
         renderItem={({ item }) => renderProjectCard(navigation, item)}
@@ -156,15 +160,75 @@ const PMTopTabNavigator = () => (
 );
 
 const styles = StyleSheet.create({
+  phaseCardContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    margin: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+    flex: 1,
+  },
+  phaseCard: {
+    padding: 16,
+  },
+  phaseTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  phaseText: {
+    fontSize: 16,
+    color: '#555',
+  },
+  taskCard: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 16,
+    margin: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  taskName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  phase: {
+    color: '#555',
+    marginBottom: 8,
+  },
+  completionStatus: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: '#2ecc71',
+  },
   projectCard: {
-    backgroundColor: 'dodgerblue',
+    backgroundColor: '#fff',
     padding: 10,
     margin: 5,
     borderRadius: 5,
   },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  cardText: {
+    fontSize: 16,
+    font: "Quicksand",
+    marginBottom: 6,
+    color: '#555',
+  },
   mytext: {
-    fontWeight:'bold',
-    marginLeft:'10px'
+    fontWeight: 'bold',
+    fontfamily: 'Roboto',
+    marginLeft: '10px',
   },
 });
 

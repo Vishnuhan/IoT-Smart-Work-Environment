@@ -7,12 +7,19 @@ const RegisterScreen = () => {
   const [employeeName, setEmployeeName] = useState('');
   const [employeeId, setEmployeeId] = useState('');
   const [password, setPassword] = useState('');
-
+  
+  const handleHome = () => {
+    // Use navigation.goBack() to go back one screen in the stack
+    // If your home screen is the first screen in the stack, you may want to use navigation.navigate('Home') instead
+    navigation.navigate('Home');
+  };
+  
   const handleRegister = async () => {
     try {
       const registrationData = { employeeName, employeeId, password };
       const response = await axios.post('http://localhost:3001/auth/register', registrationData);
       console.log('User registered successfully:', response.data);
+      navigation.navigate('Login');
       // Optionally, you can handle navigation or other logic after successful registration
     } catch (error) {
       console.error('Error registering user:', error);
@@ -42,6 +49,7 @@ const RegisterScreen = () => {
         onChangeText={(text) => setPassword(text)}
       />
       <Button title="Register" onPress={handleRegister} />
+      <Button title="Home" onPress={handleHome}  />
     </View>
   );
 };

@@ -4,10 +4,11 @@ import Icon from 'react-native-vector-icons/MaterialIcons'; // Import icons from
 import PMPage from './PMPage';
 import BookRoomPage from './BookRoomPage';
 import AccountPage from './AccountPage';
+import AddProjectPage from './AddProjectPage';
 
 const Tab = createBottomTabNavigator();
 
-const BottomTabNavigator = () => (
+const BottomTabNavigator = ({ isAdmin }) => (
   <Tab.Navigator
     tabBarOptions={{
       activeTintColor: '#3498db',
@@ -42,6 +43,17 @@ const BottomTabNavigator = () => (
         tabBarIcon: ({ color, size }) => <Icon name="account-circle" size={size} color={color} />,
       }}
     />
+
+{isAdmin && (
+      <Tab.Screen
+        name="Add Project"
+        component={AddProjectPage}
+        options={{
+          tabBarIcon: ({ color, size }) => <Icon name="add-box" size={size} color={color} />,
+        }}
+      />
+    )}
+
   </Tab.Navigator>
 );
 
