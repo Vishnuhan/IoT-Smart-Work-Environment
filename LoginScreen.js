@@ -1,6 +1,6 @@
 // LoginScreen.js
 import React, { useState } from 'react';
-import { View, Text, Button, TextInput, StyleSheet } from 'react-native';
+import { View, Text, Button, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
 import TopTabNavigator from './TopTabNavigator'; // Import the TopTabNavigator
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
@@ -45,7 +45,7 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text>Login</Text>
+      <Text style={styles.title}>Login</Text>
       <TextInput
         style={styles.input}
         placeholder="employeeId"
@@ -59,8 +59,12 @@ const LoginScreen = ({ navigation }) => {
         value={password}
         onChangeText={(text) => setPassword(text)}
       />
-      <Button title="Login" onPress={handleLogin} />
-      <Button title="Home" onPress={handleHome} style={styles.homebutt} />
+      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.homeButton} onPress={() => navigation.navigate('Home')}>
+          <Text style={styles.buttonText}>Home</Text>
+        </TouchableOpacity>
       
       {error !== '' && (
         <Text style={styles.errorMessage}>{error}</Text>
@@ -70,30 +74,52 @@ const LoginScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    resizeMode: 'cover', // or 'stretch'
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Semi-transparent white background
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 24,
+    color: '#333', // Dark text color
   },
   input: {
     height: 40,
-    width: '100%',
+    width: '80%',
     borderColor: '#3498db',
     borderBottomWidth: 1,
     marginBottom: 16,
     paddingLeft: 8,
+    color: '#333', // Dark text color
   },
-
-  homebutt: {
-    marginTop: 50
+  loginButton: {
+    backgroundColor: '#3498db',
+    paddingVertical: 15,
+    width: '80%',
+    borderRadius: 10,
+    marginBottom: 10,
   },
-
+  homeButton: {
+    backgroundColor: '#2ecc71',
+    paddingVertical: 15,
+    width: '80%',
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  buttonText: {
+    textAlign: 'center',
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
   errorMessage: {
     color: 'red',
     marginTop: 10,

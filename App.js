@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from './LoginScreen';
 import RegisterScreen from './RegisterScreen';
 import homepage from './homepage';
+import PMPage from './PMPage';
 
 const Stack = createStackNavigator();
 
@@ -27,6 +28,12 @@ const App = () => {
         <Stack.Screen
           name="Home"
           component={homepage} // Use a WebView component for home.html
+          options={{ headerShown: false }}
+        />
+
+    <Stack.Screen
+          name="PMPage"
+          component={PMPage} // Use a WebView component for home.html
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

@@ -5,6 +5,7 @@ const cors = require('cors');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const User = require('./User');
+const Project = require('./Projects');
 
 const app = express();
 
@@ -48,6 +49,27 @@ authRoutes.post('/register', async (req, res) => {
   }
 });
 
+// Project routes
+const projectRoutes = express.Router();
+
+projectRoutes.post('/projects', async (req, res) => {
+  const projectData = req.body;
+  console.log('We are in the projects API');
+  try {
+    // Save project data to MongoDB
+    // Assuming you have a Project model similar to User model
+    const newProject = new Project(projectData);
+    await newProject.save();
+
+    res.send('Project added successfully.');
+    console.log('Project Added Successfully');
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send('An error occurred while adding the project.');
+  }
+});
+
+
 authRoutes.post('/login', async (req, res) => {
   const { employeeId, password } = req.body;
 
@@ -82,6 +104,9 @@ authRoutes.post('/login', async (req, res) => {
 
 
 app.use('/auth', authRoutes);
+app.use('/auth', projectRoutes);
+
+
 
 // Listen on all network interfaces
 const PORT = 3001;
