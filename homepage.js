@@ -1,6 +1,11 @@
-// homepage.js
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+
+const COLORS = {
+  primary: '#075eec', // Adjusted primary color for consistency
+  background: '#e8ecf4', // Adjusted background color for consistency
+  text: '#1d1d1d', // Adjusted text color for consistency
+};
 
 const Homepage = ({ navigation }) => {
   const handleLoginClick = () => {
@@ -17,13 +22,13 @@ const Homepage = ({ navigation }) => {
         source={require('./images/desk-synergy.png')} // Adjust the path based on your project structure
         style={styles.logo}
       />
-      <Text style={styles.heading}>Smart Work Environment</Text>
+      <Text style={styles.title}>DeskSynergy</Text>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleLoginClick}>
-          <Text style={styles.buttonText}>Login</Text>
+        <TouchableOpacity style={styles.btn} onPress={handleLoginClick}>
+          <Text style={styles.btnText}>Login</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, styles.registerButton]} onPress={handleRegisterClick}>
-          <Text style={[styles.buttonText, styles.registerButtonText]}>Register</Text>
+        <TouchableOpacity style={styles.btn} onPress={handleRegisterClick}>
+          <Text style={styles.btnText}>Register</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -35,39 +40,41 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f8f8f8', // Light background color
+    backgroundColor: COLORS.background,
   },
-  heading: {
+  title: {
     fontSize: 24,
-    marginBottom: 20,
-    color: '#333', // Dark text color
-  },
-  buttonContainer: {
-    width: '80%',
-    marginTop: 20,
-  },
-  button: {
-    backgroundColor: '#3498db', // Blue button color
-    paddingVertical: 15,
-    marginBottom: 10,
-    borderRadius: 15, // Border radius for a curvier appearance
-  },
-  buttonText: {
-    textAlign: 'center',
-    color: '#fff', // White text color
     fontWeight: 'bold',
-    fontSize: 16,
-  },
-  registerButton: {
-    backgroundColor: '#27ae60', // Green button color for register
-  },
-  registerButtonText: {
-    color: '#fff', // White text color for register button
+    color: COLORS.text,
+    marginBottom: 20,
   },
   logo: {
     width: 200,
     height: 200,
     marginBottom: 20,
+  },
+  buttonContainer: {
+    width: '80%',
+    marginTop: 20,
+  },
+  btn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+    marginBottom: 16,
+    width: '100%',
+  },
+  btnText: {
+    fontSize: 17,
+    lineHeight: 24,
+    fontWeight: '600',
+    color: '#fff',
   },
 });
 

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Office Floor Map</title>
+    <script>
+        // JavaScript function to handle click events
+        function onRoomClick(roomName) {
+            console.log('room clicked')
+            alert("Clicked on " + roomName);
+            // Add any specific functionality you need here
+        }
+    </script>
+</head>
+<body>
+
+    <?xml version="1.1"?>
+
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+    <!-- Office Floor -->
+    <rect x="10" y="10" width="780" height="580" fill="lightgrey" stroke="black" stroke-width="2"/>
+
+    <!-- Meeting Room 1 -->
+    <rect x="20" y="20" width="150" height="100" fill="lightblue" stroke="black" stroke-width="1"/>
+    <text x="30" y="70" font-family="Verdana" font-size="15" fill="black">Meeting Room 1</text>
+
+    <!-- Meeting Room 2 -->
+    <rect x="20" y="130" width="150" height="100" fill="lightblue" stroke="black" stroke-width="1"/>
+    <text x="30" y="180" font-family="Verdana" font-size="15" fill="black">Meeting Room 2</text>
+
+    <!-- Conference Room -->
+    <rect x="180" y="20" width="250" height="150" fill="lightgreen" stroke="black" stroke-width="1"/>
+    <text x="190" y="95" font-family="Verdana" font-size="15" fill="black">Conference Room</text>
+
+    <!-- Break Area -->
+    <rect x="450" y="20" width="150" height="100" fill="peachpuff" stroke="black" stroke-width="1"/>
+    <text x="460" y="70" font-family="Verdana" font-size="15" fill="black">Cafeteria</text>
+
+    <!-- Private Office 1 -->
+    <rect x="620" y="20" width="150" height="100" fill="lightcoral" stroke="black" stroke-width="1"/>
+    <text x="630" y="70" font-family="Verdana" font-size="15" fill="black">Meeting Room 3</text>
+
+    <!-- Private Office 2 -->
+    <rect x="620" y="130" width="150" height="100" fill="lightcoral" stroke="black" stroke-width="1"/>
+    <text x="630" y="180" font-family="Verdana" font-size="15" fill="black">Meeting Room 4</text>
+
+    <!-- Open Workspace -->
+    <rect x="180" y="200" width="400" height="150" fill="khaki" stroke="black" stroke-width="1"/>
+    <text x="190" y="275" font-family="Verdana" font-size="15" fill="black">Open Workspace</text>
+
+    
+
+    <rect x="20" y="450" width="150" height="100" fill="lightcoral" stroke="black" stroke-width="1"/>
+    <text x="30" y="490" font-family="Verdana" font-size="15" fill="black">Meeting Room 5</text>
+    <!-- More rooms and features can be added similarly -->
+</svg>
+
+</body>
+</html>

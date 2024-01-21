@@ -1,16 +1,14 @@
-// LoginScreen.js
 import React, { useState } from 'react';
-import { View, Text, Button, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
-import TopTabNavigator from './TopTabNavigator'; // Import the TopTabNavigator
+import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import { Button, Card, Title, Paragraph, IconButton } from 'react-native-paper';
+import BottomTabNavigator from './BottomTabNavigator';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 
-import BottomTabNavigator from './BottomTabNavigator'; // Import your BottomTabNavigator
-
-const handleHome = () => {
-  // Use navigation.goBack() to go back one screen in the stack
-  // If your home screen is the first screen in the stack, you may want to use navigation.navigate('Home') instead
-  navigation.navigate('Home');
+const COLORS = {
+  primary: '#075eec',
+  secondary: '#222',
+  white: '#fff',
 };
 
 const LoginScreen = ({ navigation }) => {
@@ -19,18 +17,17 @@ const LoginScreen = ({ navigation }) => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [error, setError] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
-  
+
   const handleLogin = async () => {
     try {
       const loginData = { employeeId, password };
       const response = await axios.post('http://localhost:3001/auth/login', loginData);
 
       if (employeeId === 'admin' && password === 'admin') {
-        // If employeeId and password are admin, set isAdmin to true
         setIsAdmin(true);
       }
 
-      console.log(response)
+      console.log(response);
       console.log('Login successful:', response.data);
       setLoggedIn(true);
     } catch (error) {
@@ -45,85 +42,140 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="employeeId"
-        value={employeeId}
-        onChangeText={(text) => setEmployeeId(text)}
+
+    {/* Icon added above the Card */}
+    <IconButton
+        icon="login-variant"
+        color={COLORS.primary}
+        size={70}
+        onPress={() => console.log('Icon pressed')}
+        style={styles.icon}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
-        value={password}
-        onChangeText={(text) => setPassword(text)}
-      />
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.homeButton} onPress={() => navigation.navigate('Home')}>
-          <Text style={styles.buttonText}>Home</Text>
-        </TouchableOpacity>
+
+      <Card style={styles.card}>
+        <Card.Content>
+          <Title style={styles.title}>Login</Title>
+          <Paragraph style={styles.subtitle}>Manage your workspace here</Paragraph>
+
+          <TextInput
+            autoCapitalize="none"
+            autoCorrect={false}
+            keyboardType="email-address"
+            onChangeText={(email) => setEmployeeId(email)}
+            placeholder="Email address"
+            placeholderTextColor="#6b7280"
+            style={styles.inputControl}
+            value={employeeId}
+          />
+
+          <TextInput
+            autoCorrect={false}
+            onChangeText={(pwd) => setPassword(pwd)}
+            placeholder="Password"
+            placeholderTextColor="#6b7280"
+            style={styles.inputControl}
+            secureTextEntry={true}
+            value={password}
+          />
+
+          <Button
+            mode="contained"
+            onPress={handleLogin}
+            style={styles.btn}
+            labelStyle={styles.btnText}
+          >
+            Sign in
+          </Button>
+
+          <TouchableOpacity onPress={() => navigation.navigate('Register')} style={styles.formFooter}>
+            <Text style={styles.formFooterText}>
+              Don't have an account? <Text style={styles.formFooterLink}>Sign up</Text>
+            </Text>
+          </TouchableOpacity>
+
+          {error !== '' && <Text style={styles.errorMessage}>{error}</Text>}
+        </Card.Content>
+      </Card>
+
       
-      {error !== '' && (
-        <Text style={styles.errorMessage}>{error}</Text>
-      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    resizeMode: 'cover', // or 'stretch'
-  },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.7)', // Semi-transparent white background
+    backgroundColor: '#e8ecf4',
+  },
+  card: {
+    width: '80%',
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: '#fff',
+    elevation: 4,
+    height: '60%',
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 24,
-    color: '#333', // Dark text color
-  },
-  input: {
-    height: 40,
-    width: '80%',
-    borderColor: '#3498db',
-    borderBottomWidth: 1,
-    marginBottom: 16,
-    paddingLeft: 8,
-    color: '#333', // Dark text color
-  },
-  loginButton: {
-    backgroundColor: '#3498db',
-    paddingVertical: 15,
-    width: '80%',
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-  homeButton: {
-    backgroundColor: '#2ecc71',
-    paddingVertical: 15,
-    width: '80%',
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-  buttonText: {
+    fontSize: 27,
+    fontWeight: '700',
+    color: COLORS.secondary,
+    marginBottom: 6,
     textAlign: 'center',
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
+  },
+  subtitle: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#929292',
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  inputControl: {
+    height: 44,
+    backgroundColor: '#f1f5f9',
+    marginBottom: 16,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    fontSize: 15,
+    fontWeight: '500',
+    color: COLORS.secondary,
+  },
+  btn: {
+    borderRadius: 8,
+    marginBottom: 24,
+    backgroundColor: COLORS.primary,
+  },
+  btnText: {
+    fontSize: 18,
+    lineHeight: 26,
+    fontWeight: '600',
+    color: COLORS.white,
+  },
+  formFooter: {
+    marginTop: 'auto',
+    alignItems: 'center',
+  },
+  formFooterText: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: COLORS.secondary,
+    textAlign: 'center',
+    letterSpacing: 0.15,
+  },
+  formFooterLink: {
+    textDecorationLine: 'underline',
   },
   errorMessage: {
-    color: 'red',
+    color: COLORS.primary,
     marginTop: 10,
   },
+  icon: {
+    position: 'absolute',
+    top: 30,
+    right: 135,
+  },  
 });
 
 export default LoginScreen;

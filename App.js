@@ -6,13 +6,15 @@ import LoginScreen from './LoginScreen';
 import RegisterScreen from './RegisterScreen';
 import homepage from './homepage';
 import PMPage from './PMPage';
+import BottomTabNavigator from './BottomTabNavigator';
+import BookRoomPage from './BookRoomPage';
 
 const Stack = createStackNavigator();
 
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
+      <Stack.Navigator initialRouteName="LoginScreen">
         <Stack.Screen
           name="Register"
           component={RegisterScreen}
@@ -34,6 +36,18 @@ const App = () => {
     <Stack.Screen
           name="PMPage"
           component={PMPage} // Use a WebView component for home.html
+          options={{ headerShown: false }}
+        />
+
+<Stack.Screen
+          name="BottomTabNav"
+          component={BottomTabNavigator} // Use a WebView component for home.html
+          options={{ headerShown: false }}
+        />
+
+      <Stack.Screen
+          name="BookRoomPage"
+          component={BookRoomPage} // Use a WebView component for home.html
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
