@@ -69,6 +69,19 @@ projectRoutes.post('/projects', async (req, res) => {
   }
 });
 
+projectRoutes.get('/projects', async (req, res) => {
+  console.log('Fetching projects from the database');
+  try {
+    // Fetch all projects from MongoDB
+    const projects = await Project.find();
+    res.json(projects);
+    console.log(projects)
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send('An error occurred while fetching projects.');
+  }
+});
+
 
 authRoutes.post('/login', async (req, res) => {
   const { employeeId, password } = req.body;
