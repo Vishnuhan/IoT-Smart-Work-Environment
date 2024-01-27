@@ -69,20 +69,23 @@ const TasksPage = ({ route }) => {
   );
 };
 
-const renderProjectCard = (navigation, project) => (
-  <TouchableOpacity
-    onPress={() => navigation.navigate('ProjectDetails', { project, navigation })}
-  >
-    <View style={styles.projectCard}>
-      <Text style={styles.cardTitle}>Name: {project.Name}</Text>
-      <Text style={styles.cardText}>Percentage Complete: {project.Percentage_Complete}%</Text>
-      <Text style={styles.cardText}>Team: {project.Team.join(', ')}</Text>
-      <Text style={styles.cardText}>Due Date: {project.Due_Date}</Text>
-      <Text style={styles.cardText}>Tasks: {project.Tasks.join(', ')}</Text>
-    </View>
-  </TouchableOpacity>
-);
+const renderProjectCard = (navigation, project) => {
+  const teamText = project.Team ? `Team: ${project.Team.join(', ')}` : 'Team: N/A';
 
+  return (
+    <TouchableOpacity
+      onPress={() => navigation.navigate('ProjectDetails', { project, navigation })}
+    >
+      <View style={styles.projectCard}>
+        <Text style={styles.cardTitle}>Name: {project.Name}</Text>
+        <Text style={styles.cardText}>Percentage Complete: {project.Percentage_Complete}%</Text>
+        <Text style={styles.cardText}>{teamText}</Text>
+        <Text style={styles.cardText}>Due Date: {project.Due_Date}</Text>
+        <Text style={styles.cardText}>Tasks: {project.Tasks ? project.Tasks.join(', ') : 'N/A'}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
 const ProjectDetailsScreen = ({ route }) => {
   const { project, navigation } = route.params;
 
@@ -100,13 +103,13 @@ const ProjectDetailsScreen = ({ route }) => {
 
 const AllScreen = () => {
   const navigation = useNavigation();
+  const [projects, setProjects] = useState([]);  // State to store fetched projects
   const [error, setError] = useState(null);
 
   const fetchProjects = async () => {
     try {
       const response = await axios.get('http://localhost:3001/auth/projects');
-
-      console.log(response.data);  // Log the projects data
+      setProjects(response.data);  // Set projects in the state
 
     } catch (error) {
       console.error('Error fetching projects:', error);
@@ -114,15 +117,15 @@ const AllScreen = () => {
     }
   };
 
-  // Fetch projects when the component mounts
   useEffect(() => {
     fetchProjects();
   }, []);
+
   return (
     <View>
       <Text style={styles.mytext}>All Projects</Text>
       <FlatList
-      style={{ flex: 1 }}
+        style={{ flex: 1 }}
         data={projects}
         keyExtractor={(item) => item.Name}
         renderItem={({ item }) => renderProjectCard(navigation, item)}
