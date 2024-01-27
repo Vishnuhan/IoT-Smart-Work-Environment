@@ -1,9 +1,10 @@
-import React from 'react';
+import {React, useState, useEffect} from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { projects, tasks } from './dummyData'; // Import the dummy data
 import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import axios from 'axios';  // Import axios for API requests
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
@@ -68,110 +69,55 @@ const TasksPage = ({ route }) => {
   );
 };
 
-// Assuming you have an API endpoint to fetch project data
-const API_ENDPOINT = 'http://localhost:3001/auth/projects';
-
-const renderProjectCard = async (navigation, project) => {
-  try {
-    const response = await fetch(API_ENDPOINT);
-    const data = await response.json();
-
-    // Assuming the response data is an array of projects
-    const projectData = data.find((item) => item.Name === project.Name);
-
-    if (projectData) {
-      // Process the data and then render the component
-      const renderedComponent = (
-        <TouchableOpacity
-          onPress={() => navigation.navigate('ProjectDetails', { project: projectData, navigation })}
-        >
-          <View style={styles.projectCard}>
-            <Text style={styles.cardTitle}>Name: {projectData.Name}</Text>
-            <Text style={styles.cardText}>Percentage Complete: {projectData.Percentage_Complete}%</Text>
-            <Text style={styles.cardText}>Team: {projectData.Team.join(', ')}</Text>
-            <Text style={styles.cardText}>Due Date: {projectData.Due_Date}</Text>
-            <Text style={styles.cardText}>Tasks: {projectData.Tasks.join(', ')}</Text>
-          </View>
-        </TouchableOpacity>
-      );
-
-      // Render the component or return it for further processing
-      return renderedComponent;
-    } else {
-      // Handle case where project data is not found
-      return (
-        <View style={styles.projectCard}>
-          <Text style={styles.cardTitle}>Project not found</Text>
-        </View>
-      );
-    }
-  } catch (error) {
-    console.error('Error fetching project data:', error);
-    // Handle error fetching data
-    return (
-      <View style={styles.projectCard}>
-        <Text style={styles.cardTitle}>Error fetching project data</Text>
-      </View>
-    );
-  }
-};
-
+const renderProjectCard = (navigation, project) => (
+  <TouchableOpacity
+    onPress={() => navigation.navigate('ProjectDetails', { project, navigation })}
+  >
+    <View style={styles.projectCard}>
+      <Text style={styles.cardTitle}>Name: {project.Name}</Text>
+      <Text style={styles.cardText}>Percentage Complete: {project.Percentage_Complete}%</Text>
+      <Text style={styles.cardText}>Team: {project.Team.join(', ')}</Text>
+      <Text style={styles.cardText}>Due Date: {project.Due_Date}</Text>
+      <Text style={styles.cardText}>Tasks: {project.Tasks.join(', ')}</Text>
+    </View>
+  </TouchableOpacity>
+);
 
 const ProjectDetailsScreen = ({ route }) => {
-  const { navigation } = route.params;
-
-  // Use state to manage the project data
-  const [projectData, setProjectData] = useState(null);
-
-  useEffect(() => {
-    const fetchProjectData = async () => {
-      try {
-        const response = await fetch(API_ENDPOINT);
-        const data = await response.json();
-
-        // Assuming the response data is an array of projects
-        const project = data.find((item) => item.Name === route.params.project.Name);
-
-        if (project) {
-          setProjectData(project);
-        } else {
-          // Handle case where project data is not found
-          setProjectData({ error: 'Project not found' });
-        }
-      } catch (error) {
-        console.error('Error fetching project data:', error);
-        // Handle error fetching data
-        setProjectData({ error: 'Error fetching project data' });
-      }
-    };
-
-    // Call the fetchProjectData function when the component mounts
-    fetchProjectData();
-  }, [route.params.project.Name]); // Dependency to re-run the effect when the project name changes
+  const { project, navigation } = route.params;
 
   return (
     <View>
       <Text style={styles.mytext}>Project Phases</Text>
-      {projectData && projectData.error ? (
-        <View style={styles.projectCard}>
-          <Text style={styles.cardTitle}>{projectData.error}</Text>
-        </View>
-      ) : (
-        <FlatList
-          style={{ flex: 1 }}
-          data={projectData ? [projectData] : []} // Wrap projectData in an array
-          keyExtractor={(item) => item.Name}
-          renderItem={({ item }) => renderProjectCard(navigation, item)}
-        />
-      )}
+      <FlatList
+        data={PHASES}
+        keyExtractor={(item) => item.name}
+        renderItem={({ item }) => renderPhaseCard(navigation, item, project.Name)}
+      />
     </View>
   );
 };
 
-
 const AllScreen = () => {
   const navigation = useNavigation();
+  const [error, setError] = useState(null);
 
+  const fetchProjects = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/auth/projects');
+
+      console.log(response.data);  // Log the projects data
+
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+      setError('Error fetching projects');
+    }
+  };
+
+  // Fetch projects when the component mounts
+  useEffect(() => {
+    fetchProjects();
+  }, []);
   return (
     <View>
       <Text style={styles.mytext}>All Projects</Text>
@@ -305,3 +251,6 @@ const styles = StyleSheet.create({
 });
 
 export default PMPage;
+
+
+

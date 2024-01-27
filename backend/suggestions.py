@@ -1,8 +1,12 @@
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
+
+nltk.download('punkt')
+nltk.download('stopwords')
 
 # Extended Sample Data with 10 more entries
 data = {

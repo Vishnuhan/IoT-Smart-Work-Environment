@@ -7,6 +7,8 @@ export const projects = [
       Due_Date: '2023-12-01',
       Tasks: ['TaskA', 'TaskB'],
     },
+
+    
     {
       Name: 'Project B',
       Percentage_Complete: 70,
