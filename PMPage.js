@@ -1,6 +1,14 @@
 import {React, useState, useEffect} from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Modal,
+  TextInput,
+  Button, } from 'react-native';
 import { projects, tasks } from './dummyData'; // Import the dummy data
 import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -53,18 +61,140 @@ const renderTaskCard = (task) => (
 
 const TasksPage = ({ route }) => {
   const { phase, projectName } = route.params;
-
   const tasksForPhase = tasks.filter((task) => task.Phase === phase.name);
+  const navigation = useNavigation();
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [newTaskName, setNewTaskName] = useState('');
+  const [newTaskDueDate, setNewTaskDueDate] = useState('');
+  const [newTaskNumEmployees, setNewTaskNumEmployees] = useState(1);
+  const [newTaskEmployees, setNewTaskEmployees] = useState(['']);
+
+  // Function to handle the button click and update the right side
+  const handleUpdateSampleEmployees = () => {
+    // Always show 20 sample employees regardless of the input
+    setNewTaskEmployees(Array.from({ length: 5 }, (_, index) => `Sample Employee ${index + 1}`));
+  };
+
+
+  const handleAddTask = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleSaveTask = () => {
+    // Add your logic to save the new task
+    // For now, let's just log the task details
+    console.log('New Task:', {
+      Name: newTaskName,
+      DueDate: newTaskDueDate,
+      Employees: newTaskEmployees,
+    });
+
+    // Close the modal after saving the task
+    setIsModalVisible(false);
+  };
+
+  const handleCloseModal = () => {
+    // Close the modal without saving the task
+    setIsModalVisible(false);
+  };
+
+  const renderEmployeeInput = (index) => (
+    <TextInput
+      key={index.toString()}
+      style={styles.inputField}
+      placeholder={`Employee ${index + 1}`}
+      onChangeText={(text) => {
+        const updatedEmployees = [...newTaskEmployees];
+        updatedEmployees[index] = text;
+        setNewTaskEmployees(updatedEmployees);
+      }}
+    />
+  );
+
+  const renderEmployeeInputs = () => {
+    const employeeInputs = [];
+    for (let i = 0; i < newTaskNumEmployees; i++) {
+      employeeInputs.push(renderEmployeeInput(i));
+    }
+    return employeeInputs;
+  };
 
   return (
     <View>
-      <Text style={styles.mytext}>Tasks for Phase: {phase.name}</Text>
-      <Text style={styles.mytext}>Project: {projectName}</Text>
+      <View style={styles.header}>
+        <Text style={styles.mytext}>Tasks for Phase: {phase.name}</Text>
+        <Text style={styles.mytext}>Project: {projectName}</Text>
+        <TouchableOpacity onPress={handleAddTask} style={styles.addButton}>
+          <Text style={styles.addButtonText}>Add Task</Text>
+        </TouchableOpacity>
+      </View>
       <FlatList
         data={tasksForPhase}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => renderTaskCard(item)}
       />
+
+      <Modal
+        visible={isModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={handleCloseModal}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.splitScreenContainer}>
+            {/* Left Side: Input Fields */}
+            <View style={styles.leftSide}>
+              <Text style={styles.modalTitle}>Add Task</Text>
+              <TextInput
+                style={styles.inputField}
+                placeholder="Task Name"
+                onChangeText={(text) => setNewTaskName(text)}
+              />
+              <TextInput
+                style={styles.inputField}
+                placeholder="Due Date"
+                onChangeText={(text) => setNewTaskDueDate(text)}
+              />
+              <TextInput
+                style={styles.inputField}
+                placeholder="Task Size"
+                onChangeText={(text) => setNewTaskDueDate(text)}
+              />
+              <TextInput
+                style={styles.inputField}
+                placeholder="Number of Employees"
+                onChangeText={(text) => setNewTaskNumEmployees(parseInt(text) || 0)}
+              />
+              {/* Button to update sample employees */}
+              <TouchableOpacity onPress={handleUpdateSampleEmployees} style={styles.updateButton}>
+                <Text style={styles.addButtonText}>Update Sample Employees</Text>
+              </TouchableOpacity>
+              {/* Render additional employee input fields based on the count */}
+              {renderEmployeeInputs()}
+              {/* Add more input fields as needed */}
+            </View>
+
+            {/* Right Side: Sample Employees */}
+            <View style={styles.rightSide}>
+              <Text style={styles.modalTitle}>Sample Employees</Text>
+              <FlatList
+                data={newTaskEmployees}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => (
+                  <Text style={styles.sampleEmployee}>{item}</Text>
+                )}
+              />
+            </View>
+          </View>
+
+          {/* Common Buttons for Both Sides */}
+          <View style={styles.modalButtons}>
+            <Button title="Save" onPress={handleSaveTask} />
+            <Button title="Cancel" onPress={handleCloseModal} />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -110,7 +240,6 @@ const AllScreen = () => {
     try {
       const response = await axios.get('http://localhost:3001/auth/projects');
       setProjects(response.data);  // Set projects in the state
-
     } catch (error) {
       console.error('Error fetching projects:', error);
       setError('Error fetching projects');
@@ -122,15 +251,17 @@ const AllScreen = () => {
   }, []);
 
   return (
-    <View>
-      <Text style={styles.mytext}>All Projects</Text>
-      <FlatList
-        style={{ flex: 1 }}
-        data={projects}
-        keyExtractor={(item) => item.Name}
-        renderItem={({ item }) => renderProjectCard(navigation, item)}
-      />
-    </View>
+    <ScrollView>
+      <View>
+        <Text style={styles.mytext}>All Projects</Text>
+        <FlatList
+          style={{ flex: 1 }}
+          data={projects}
+          keyExtractor={(item) => item.Name}
+          renderItem={({ item }) => renderProjectCard(navigation, item)}
+        />
+      </View>
+    </ScrollView>
   );
 };
 
@@ -138,14 +269,16 @@ const OngoingScreen = () => {
   const navigation = useNavigation();
 
   return (
-    <View>
-      <Text style={styles.mytext}>Ongoing Projects</Text>
-      <FlatList
-        data={projects.filter((project) => project.Percentage_Complete < 100)}
-        keyExtractor={(item) => item.Name}
-        renderItem={({ item }) => renderProjectCard(navigation, item)}
-      />
-    </View>
+    <ScrollView>
+      <View>
+        <Text style={styles.mytext}>Ongoing Projects</Text>
+        <FlatList
+          data={projects.filter((project) => project.Percentage_Complete < 100)}
+          keyExtractor={(item) => item.Name}
+          renderItem={({ item }) => renderProjectCard(navigation, item)}
+        />
+      </View>
+    </ScrollView>
   );
 };
 
@@ -153,14 +286,16 @@ const CompletedScreen = () => {
   const navigation = useNavigation();
 
   return (
-    <View>
-      <Text style={styles.mytext}>Completed Projects</Text>
-      <FlatList
-        data={projects.filter((project) => project.Percentage_Complete === 100)}
-        keyExtractor={(item) => item.Name}
-        renderItem={({ item }) => renderProjectCard(navigation, item)}
-      />
-    </View>
+    <ScrollView>
+      <View>
+        <Text style={styles.mytext}>Completed Projects</Text>
+        <FlatList
+          data={projects.filter((project) => project.Percentage_Complete === 100)}
+          keyExtractor={(item) => item.Name}
+          renderItem={({ item }) => renderProjectCard(navigation, item)}
+        />
+      </View>
+    </ScrollView>
   );
 };
 
@@ -250,6 +385,71 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontfamily: 'Roboto',
     marginLeft: '10px',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  addButton: {
+    backgroundColor: '#3498db',
+    padding: 10,
+    borderRadius: 5,
+  },
+  addButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  inputField: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingLeft: 10,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 10,
+  },
+  splitScreenContainer: {
+    flexDirection: 'row',
+    flex: 1,
+  },
+  leftSide: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#f0f0f0',
+  },
+  rightSide: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#e0e0e0',
+  },
+  sampleEmployee: {
+    fontSize: 16,
+    marginBottom: 10,
   },
 });
 
