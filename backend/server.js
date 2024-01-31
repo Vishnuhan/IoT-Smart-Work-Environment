@@ -6,6 +6,7 @@ const session = require('express-session');
 const mongoose = require('mongoose');
 const User = require('./User');
 const Project = require('./Projects');
+const Room = require('./Rooms');
 
 const app = express();
 
@@ -69,6 +70,34 @@ projectRoutes.post('/projects', async (req, res) => {
   }
 });
 
+const roomRoutes = express.Router();
+roomRoutes.get('/rooms', async (req, res) => {
+  console.log('Fetching room data from the database');
+  try {
+    const rooms = await Room.find();
+    // Log room details
+    rooms.forEach(room => {
+      console.log(`Room Name: ${room.Name}`);
+
+      // Check if 'Times' property exists
+      if (room.Times) {
+        // Log each time slot with its boolean value
+        room.Times.forEach(timeSlot => {
+          console.log(`  Time: ${timeSlot.time}, Booked: ${timeSlot.booked}`);
+        });
+      } else {
+        console.log('  No time slots available.');
+      }
+    });
+
+    // Send the rooms as JSON in the response
+    res.json(rooms);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send('An error occurred while fetching rooms data.');
+  }
+});
+
 projectRoutes.get('/projects', async (req, res) => {
   console.log('Fetching projects from the database');
   try {
@@ -81,7 +110,6 @@ projectRoutes.get('/projects', async (req, res) => {
     return res.status(500).send('An error occurred while fetching projects.');
   }
 });
-
 
 authRoutes.post('/login', async (req, res) => {
   const { employeeId, password } = req.body;
@@ -118,6 +146,7 @@ authRoutes.post('/login', async (req, res) => {
 
 app.use('/auth', authRoutes);
 app.use('/auth', projectRoutes);
+app.use('/auth', roomRoutes);
 
 
 

@@ -9,19 +9,6 @@
   <!-- Office Floor -->
   <rect x="10" y="10" width="780" height="580" fill="lightgrey" stroke="black" stroke-width="2"/>
 
-  <!-- Pop-up/modal components -->
-  <foreignObject x="0" y="0" width="100%" height="100%" style="overflow: visible;">
-    <div xmlns="http://www.w3.org/1999/xhtml" id="popup" style="display: none; position: absolute; background-color: white; border: 1px solid black; padding: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);">
-      <label for="timeSlot">Select Time Slot:</label>
-      <select id="timeSlot" name="timeSlot">
-        <option value="9:00 AM - 10:00 AM">9:00 AM - 10:00 AM</option>
-        <option value="10:00 AM - 11:00 AM">10:00 AM - 11:00 AM</option>
-        <option value="11:00 AM - 12:00 PM">11:00 AM - 12:00 PM</option>
-        <!-- Add more time slots as needed -->
-      </select>
-      <button onclick="confirmBooking()">Confirm Booking</button>
-    </div>
-  </foreignObject>
 
   <rect id="meeting-room-1" data-room="Meeting Room 1" x="20" y="20" width="150" height="100" fill="lightblue" stroke="black" stroke-width="1"/>
   <text x="30" y="70" font-family="Verdana" font-size="15" fill="black">Meeting Room 1</text>
