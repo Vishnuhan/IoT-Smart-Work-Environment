@@ -24,6 +24,25 @@ app.get('/api/data', (req, res) => {
   res.json({ message: 'Hello from the server!' });
 });
 
+app.get('/get-suggestions.py', (req, res) => {
+  // Build the command to execute the Python script
+  const command = `python suggestions.py ${inputData}`;
+
+  // Execute the command
+  exec(command, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error executing the Python script: ${error.message}`);
+      return res.status(500).send('Internal Server Error');
+    }
+
+    // Log the script output
+    console.log(`Python script output: ${stdout}`);
+
+    // Send the script output as the response
+    res.send(stdout);
+  });
+});
+
 // Authentication routes
 const authRoutes = express.Router();
 
