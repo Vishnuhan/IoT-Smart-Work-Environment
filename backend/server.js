@@ -71,32 +71,66 @@ projectRoutes.post('/projects', async (req, res) => {
 });
 
 const roomRoutes = express.Router();
-roomRoutes.get('/rooms', async (req, res) => {
+
+roomRoutes.get('/rooms/:roomName/times/:times', async (req, res) => {
   console.log('Fetching room data from the database');
   try {
-    const rooms = await Room.find();
-    // Log room details
-    rooms.forEach(room => {
-      console.log(`Room Name: ${room.Name}`);
+    const { roomName, times } = req.params;
 
-      // Check if 'Times' property exists
-      if (room.Times) {
-        // Log each time slot with its boolean value
-        room.Times.forEach(timeSlot => {
-          console.log(`  Time: ${timeSlot.time}, Booked: ${timeSlot.booked}`);
-        });
-      } else {
-        console.log('  No time slots available.');
-      }
-    });
+    // Find the room by ID (assuming your room is identified by roomName)
+    const room = await Room.findOne({ Name: roomName });
 
-    // Send the rooms as JSON in the response
-    res.json(rooms);
+    if (!room) {
+      return res.status(404).json({ message: 'Room not found' });
+    }
+
+    // Check if 'Times' property exists
+if (room.Times && room.Times.length > 0) {
+  // Find the time slot corresponding to the specified time
+  const specifiedTimeSlot = room.Times.find(timeSlot => timeSlot.time === times);
+
+  if (specifiedTimeSlot) {
+    // Use the boolean value from the database
+    const isTimeBooked = specifiedTimeSlot.booked;
+    console.log(isTimeBooked)
+
+    if (isTimeBooked) {
+      console.log('Room is Available to be booked!');
+      res.json({ booked: true });
+    } else {
+      console.log('Room is occupied, choose another timeslot.');
+      res.json({ booked: false });
+    }
+  } else {
+    console.log('Specified time slot not found.');
+    res.json({ booked: false });
+  }
+} 
   } catch (err) {
     console.error(err);
-    return res.status(500).send('An error occurred while fetching rooms data.');
+    return res.status(500).json({ message: 'An error occurred while fetching rooms data.' });
   }
 });
+
+// API to handle update values 
+roomRoutes.put('/rooms/:roomName/times/:times', async (req, res) => {
+  try {
+    const { roomName, times } = req.params;
+
+    // Update the room by setting the booked value to false for the specific time slot
+    await Room.findOneAndUpdate(
+      { Name: roomName, 'Times.time': times },
+      { $set: { 'Times.$.booked': false } }
+    );
+
+    // Send a success response
+    res.json({ message: 'Booking updated successfully' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'An error occurred while updating room data.' });
+  }
+});
+
 
 projectRoutes.get('/projects', async (req, res) => {
   console.log('Fetching projects from the database');

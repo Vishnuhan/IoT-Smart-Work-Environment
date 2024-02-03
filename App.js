@@ -14,7 +14,7 @@ const Stack = createStackNavigator();
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
+      <Stack.Navigator initialRouteName="BookRoomPage">
         <Stack.Screen
           name="Register"
           component={RegisterScreen}
@@ -48,7 +48,7 @@ const App = () => {
       <Stack.Screen
           name="BookRoomPage"
           component={BookRoomPage} // Use a WebView component for home.html
-          options={{ headerShown: false }}
+          options={{ headerShown: true }}
         />
       </Stack.Navigator>
     </NavigationContainer>
