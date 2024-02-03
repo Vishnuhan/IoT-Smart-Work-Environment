@@ -177,7 +177,7 @@ const TasksPage = ({ route }) => {
 
             {/* Right Side: Sample Employees */}
             <View style={styles.rightSide}>
-              <Text style={styles.modalTitle}>Sample Employees</Text>
+              <Text style={styles.modalTitle}>AI Suggestion</Text>
               <FlatList
                 data={newTaskEmployees}
                 keyExtractor={(item, index) => index.toString()}
@@ -190,8 +190,14 @@ const TasksPage = ({ route }) => {
 
           {/* Common Buttons for Both Sides */}
           <View style={styles.modalButtons}>
-            <Button title="Save" onPress={handleSaveTask} />
-            <Button title="Cancel" onPress={handleCloseModal} />
+            {/* <Button title="Save" onPress={handleSaveTask} style={styles.saveButton} /> */}
+            <View style={styles.buttonWrapper}>
+              <Button title="Save" onPress={handleSaveTask} />
+            </View>
+            {/* <Button title="Cancel" onPress={handleCloseModal} style={styles.cancelButton} /> */}
+            <View style={[styles.buttonWrapper, styles.cancelButtonWrapper]}>
+              <Button title="Cancel" onPress={handleCloseModal} />
+            </View>
           </View>
         </View>
       </Modal>
@@ -401,38 +407,93 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
   },
+  updateButton: {
+    backgroundColor: '#2ecc71', // Green background color
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 15,
+    marginBottom: 20,
+  },
   addButtonText: {
-    color: '#fff',
+    color: '#ffffff',
+    textAlign: 'center',
     fontWeight: 'bold',
+    fontSize: 16,
   },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black background
   },
   modalContent: {
     backgroundColor: '#fff',
-    padding: 20,
     borderRadius: 10,
+    overflow: 'hidden', // Ensure border-radius works as expected
+    width: '80%', // Adjust the width as needed
+    maxWidth: 400, // Maximum width for the modal
     elevation: 5,
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
+    padding: 15,
+    backgroundColor: '#3498db', // Header background color
+    color: '#fff', // Header text color
+    textAlign: 'center',
   },
   inputField: {
     height: 40,
-    borderColor: 'gray',
+    borderColor: '#ccc',
     borderWidth: 1,
     marginBottom: 10,
-    paddingLeft: 10,
+    paddingHorizontal: 10,
+    borderRadius: 5,
   },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between', // or 'space-around' based on your preference
+    marginHorizontal: 20, // Adjust the margin as needed
+    marginTop: 20,
+    width: "150%"
+  },
+  buttonWrapper: {
+    flex: 1,
+    marginHorizontal: 10, // Add margin to each button
+  },
+  saveButton: {
+    backgroundColor: '#3498db',
+    padding: 12,
+    borderRadius: 8,
+    marginRight: 10, // Add margin to the right of "Save" button
+  },
+
   modalButtons: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: 10,
+    marginBottom: 10,
+    width: "100%"
   },
+  buttonWrapper: {
+    flex: 1,
+    marginHorizontal: 10, // Add margin to each button
+  },
+  cancelButtonWrapper: {
+    flex: 1, // Set the same flex value for both buttons
+  },
+  cancelButton: {
+    padding: 12,
+    borderRadius: 8,
+    marginLeft: 10, // Add margin to the left of "Cancel" button
+  },
+  buttonText: {
+    color: '#ffffff',
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+
   splitScreenContainer: {
     flexDirection: 'row',
     flex: 1,

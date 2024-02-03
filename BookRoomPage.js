@@ -73,6 +73,7 @@ const BookRoomPage = () => {
         // Update the boolean value to false using the API
         await updateBookingStatus(room, time);
         // Handle accordingly, e.g., show a message to the user
+        Alert.alert('Booking Successful', `You have successfully booked ${room} at ${time}`);
       }
       // if booked -> false
       else {
@@ -81,11 +82,12 @@ const BookRoomPage = () => {
         setModalVisible(false);
         // Show an error message to the user
       // Alert('Booking Unsuccessful', `Room ${room} is not available for booking at ${time}`);
-
+        Alert.alert('Booking Unsuccessful', `Room ${room} is not available for booking at ${time}`);
       }
     } catch (error) {
       console.error('Error handling booking:', error);
       // Handle error appropriately
+      Alert.alert('Error', 'An error occurred while processing your booking. Please try again.');
     }
   };
  

@@ -8,13 +8,15 @@ import homepage from './homepage';
 import PMPage from './PMPage';
 import BottomTabNavigator from './BottomTabNavigator';
 import BookRoomPage from './BookRoomPage';
+import AccountPage from './AccountPage';
+import AddProject from './AddProjectPage';
 
 const Stack = createStackNavigator();
 
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="BookRoomPage">
+      <Stack.Navigator initialRouteName="PMPage">
         <Stack.Screen
           name="Register"
           component={RegisterScreen}
@@ -50,6 +52,13 @@ const App = () => {
           component={BookRoomPage} // Use a WebView component for home.html
           options={{ headerShown: true }}
         />
+
+<Stack.Screen
+          name="AccountPage"
+          component={AccountPage} // Use a WebView component for home.html
+          options={{ headerShown: true }}
+        />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
