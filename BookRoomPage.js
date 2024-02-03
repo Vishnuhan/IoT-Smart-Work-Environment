@@ -108,7 +108,7 @@ const updateBookingStatus = async (room, time) => {
       contentContainerStyle={{ width: 800, paddingHorizontal: 16 }}
     >
       <View>
-        <Text>Office Floor Map</Text>
+        
 
         {/* SVG floor plan */}
         <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
@@ -158,21 +158,23 @@ const updateBookingStatus = async (room, time) => {
 
         {/* Modal for Booking */}
         <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            setModalVisible(false);
-          }}
-        >
-          <View>
-            <Text>Room Name: {selectedRoom}</Text>
-            <Text>Select Time:</Text>
-            <Picker
-              selectedValue={selectedTime}
-              onValueChange={(itemValue) => setSelectedTime(itemValue)}
-            >
-              <Picker.Item label="10:00 AM - 11:00 AM" value="10:00 AM - 11:00 AM" />
+  animationType="slide"
+  transparent={true}
+  visible={modalVisible}
+  onRequestClose={() => {
+    setModalVisible(false);
+  }}
+>
+  <View style={styles.modalContainer}>
+    <Text>Room Name: {selectedRoom}</Text>
+    <Text>Select Time:</Text>
+    <View style={styles.pickerContainer}>
+      <Picker
+        selectedValue={selectedTime}
+        onValueChange={(itemValue) => setSelectedTime(itemValue)}
+        style = {styles.pickerStyle}
+      >
+        <Picker.Item label="10:00 AM - 11:00 AM" value="10:00 AM - 11:00 AM" />
                 <Picker.Item label="11:00 AM - 12:00 PM" value="11:00 AM - 12:00 PM" />
                 <Picker.Item label="12:00 PM - 1:00 PM" value="12:00 PM - 1:00 PM" />
                 <Picker.Item label="1:00 PM - 2:00 PM" value="1:00 PM - 2:00 PM" />
@@ -180,9 +182,10 @@ const updateBookingStatus = async (room, time) => {
                 <Picker.Item label="3:00 PM - 4:00 PM" value="3:00 PM - 4:00 PM" />
                 <Picker.Item label="4:00 PM - 5:00 PM" value="4:00 PM - 5:00 PM" />
             </Picker>
-            <Button title="Confirm Booking" onPress={() => handleConfirmBooking(selectedRoom, selectedTime)} />
-          </View>
-        </Modal>
+    </View>
+    <Button style = {styles.finalConfirmationBtn} title="Confirm Booking" onPress={() => handleConfirmBooking(selectedRoom, selectedTime)} />
+  </View>
+</Modal>
       </View>
     </ScrollView>
   );
@@ -226,6 +229,27 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
     color: 'white',
+  },
+
+  pickerContainer: {
+    width: '100%', // Ensure the Picker takes the full width
+    marginBottom: 10, // Add margin as needed
+  },
+  
+  pickerStyle: {
+    height: 50, // Adjust the height as needed
+    width: '100%',
+    backgroundColor: 'white', // Set background color
+    color: 'black', // Set text color
+    borderRadius: 10, // Set border radius
+    borderWidth: 1, // Set border width
+    borderColor: 'gray', // Set border color
+    paddingLeft: 10, // Add padding left as needed
+    paddingRight: 10, // Add padding right as needed
+  },
+
+  finalConfirmationBtn: {
+    borderRadius: 20,
   },
 
   confirmbutton: {
