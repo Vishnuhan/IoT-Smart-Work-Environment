@@ -68,12 +68,51 @@ const TasksPage = ({ route }) => {
   const [newTaskName, setNewTaskName] = useState('');
   const [newTaskDueDate, setNewTaskDueDate] = useState('');
   const [newTaskNumEmployees, setNewTaskNumEmployees] = useState(1);
-  const [newTaskEmployees, setNewTaskEmployees] = useState(['']);
+  const [newTaskEmployees, setNewTaskEmployees] = useState([]);
 
   // Function to handle the button click and update the right side
-  const handleUpdateSampleEmployees = () => {
-    // Always show 20 sample employees regardless of the input
-    setNewTaskEmployees(Array.from({ length: 5 }, (_, index) => `Sample Employee ${index + 1}`));
+  const handleUpdateSampleEmployees = async() => {   
+      try {
+        // get user data
+        const response = await axios.get('http://localhost:3001/auth/users');
+
+        const user_Data = await axios.post('http://localhost:3001/auth/get-suggestions.py', {
+          user_data: response.data,
+        });
+
+        const rawOutput = user_Data.data;
+console.log('Raw Python script output:', rawOutput);
+console.log(typeof(rawOutput));
+
+// Initialize an empty array to store non-whitespace integers
+const nonWhitespaceIntegers = [];
+
+// Split the string into an array of strings using whitespace as a delimiter
+const words = rawOutput.split(/\s+/);
+
+// Iterate through each word in the array
+for (const word of words) {
+  // Parse the word as an integer
+  const num = parseInt(word);
+
+  // Check if the parsed value is a valid integer (not NaN)
+  if (!isNaN(num)) {
+    // Add the integer to the array
+    nonWhitespaceIntegers.push(num);
+  }
+}
+
+// Log the array of non-whitespace integers
+console.log('Non-whitespace integers:', nonWhitespaceIntegers);
+
+      } catch (error) {
+        console.error('Error fetching sample users:', error);
+        setError('Error fetching users');
+      }
+    
+  
+    // // Always show 20 sample employees regardless of the input
+    // setNewTaskEmployees(Array.from({ length: 5 }, (_, index) => `Sample Employee ${index + 1}`));
   };
 
 

@@ -7,6 +7,8 @@ const mongoose = require('mongoose');
 const User = require('./User');
 const Project = require('./Projects');
 const Room = require('./Rooms');
+const { exec } = require('child_process');
+
 
 const app = express();
 
@@ -23,10 +25,34 @@ mongoose.connect('mongodb://127.0.0.1:27017/auth');
 app.get('/api/data', (req, res) => {
   res.json({ message: 'Hello from the server!' });
 });
+// Authentication routes
+const authRoutes = express.Router();
 
-app.get('/get-suggestions.py', (req, res) => {
+authRoutes.get('/users', async (req, res) => {
+  console.log('Fetching user data from the database');
+  try {
+    // Fetch all users from MongoDB
+    const users = await User.find();
+    res.json(users);
+    console.log(users)
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send('An error occurred while fetching user data.');
+  }
+});
+
+authRoutes.post('/get-suggestions.py', (req, res) => {
   // Build the command to execute the Python script
-  const command = `python suggestions.py ${inputData}`;
+  console.log('reached suggestions api');
+  const { user_data } = req.body;
+
+  // Convert user_data array to a JSON string
+  const jsonData = JSON.stringify(user_data);
+
+  // Escape special characters to prevent potential security issues
+  const sanitizedJsonData = jsonData.replace(/"/g, '\\"');
+
+  const command = `python3 suggestions.py "${sanitizedJsonData}"`;
 
   // Execute the command
   exec(command, (error, stdout, stderr) => {
@@ -36,15 +62,13 @@ app.get('/get-suggestions.py', (req, res) => {
     }
 
     // Log the script output
-    console.log(`Python script output: ${stdout}`);
+    console.log(`${stdout}`);
 
     // Send the script output as the response
     res.send(stdout);
   });
 });
 
-// Authentication routes
-const authRoutes = express.Router();
 
 authRoutes.post('/register', async (req, res) => {
   const { employeeName, employeeId, password } = req.body;

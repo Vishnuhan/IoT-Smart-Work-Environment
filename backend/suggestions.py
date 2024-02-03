@@ -1,3 +1,6 @@
+import ssl
+import sys
+ssl._create_default_https_context = ssl._create_unverified_context
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -5,8 +8,11 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 
+# Access the first command-line argument (user_data)
+user_data = sys.argv[1]
 nltk.download('punkt')
 nltk.download('stopwords')
+
 
 # Extended Sample Data with 10 more entries
 data = {
@@ -91,4 +97,6 @@ df['Alpha'] = (0.7 * df['TaskRelevancy']) + (0.3 * df['RelativeAvailability'])
 
 # Display the top 5 entries based on 'Alpha'
 top_5_entries = df.nlargest(5, 'Alpha')
-print(top_5_entries[['EmployeeID', 'TasksID', 'TaskName', 'TaskRelevancy', 'RelativeAvailability', 'Alpha']])
+# print(top_5_entries[['EmployeeID']])
+# Display the top 5 entries based on 'Alpha' without the index
+print(top_5_entries['EmployeeID'].to_string(index=False))
