@@ -52,7 +52,7 @@ authRoutes.post('/get-suggestions.py', (req, res) => {
   // Escape special characters to prevent potential security issues
   const sanitizedJsonData = jsonData.replace(/"/g, '\\"');
 
-  const command = `python3 suggestions.py "${sanitizedJsonData}"`;
+  const command = `python suggestions.py "${sanitizedJsonData}"`;
 
   // Execute the command
   exec(command, (error, stdout, stderr) => {

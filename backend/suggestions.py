@@ -7,67 +7,82 @@ from sklearn.metrics.pairwise import cosine_similarity
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
+import json
 
 # Access the first command-line argument (user_data)
 user_data = sys.argv[1]
+
+#employeesData = json.loads(user_data)
+
+employeesData = [
+    {
+        "user": {
+            "_id": {
+                "$oid": "65bea199e634522f6ca380ee"
+            },
+            "employeeName": "Eva Anderson",
+            "employeeId": "EMP004",
+            "password": "evaPass",
+            "tasks": [
+                {
+                    "taskName": "Develop new feature",
+                    "taskSize": 0.5,
+                    "activeTask": True
+                },
+                {
+                    "taskName": "Review code changes",
+                    "taskSize": 0.3,
+                    "activeTask": False
+                }
+            ]
+        },
+    },
+    {
+        "user": {
+            "_id": {
+                "$oid": "65bea199e634522f6ca380easdsade"
+            },
+            "employeeName": "Eva Anderson But Guy",
+            "employeeId": "EMP004",
+            "password": "evaPass",
+            "tasks": [
+                {
+                    "taskName": "Design UI mockups",
+                    "taskSize": 0.1,
+                    "activeTask": True
+                },
+                {
+                    "taskName": "Review code changes",
+                    "taskSize": 0.3,
+                    "activeTask": False
+                }
+            ]
+        }
+    }
+]
+
 nltk.download('punkt')
 nltk.download('stopwords')
 
+# Extract data from the provided JSON format
+employee_data = []
+for employee in employeesData:
+    employee_id = employee["user"]["_id"]["$oid"]
+    employee_name = employee["user"]["employeeName"]
+    employee_tasks = [(task["taskName"], task["taskSize"], task["activeTask"]) for task in employee["user"]["tasks"]]
+    employee_data.append((employee_id, employee_name, employee_tasks))
 
-# Extended Sample Data with 10 more entries
-data = {
-    'EmployeeID': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
-    'TasksID': [
-        [101, 102, 103], [104, 105, 106], [107, 108, 109],
-        [110, 111, 112], [113, 114, 115], [116, 117, 118],
-        [119, 120, 121], [122, 123, 124], [125, 126, 127],
-        [128, 129, 130], [131, 132, 133], [134, 135, 136],
-        [137, 138, 139], [140, 141, 142], [143, 144, 145]
-    ],
-    'TaskName': [
-        ["Develop new feature", "Review code changes", "Test software"],
-        ["Optimize database queries", "Write documentation", "Collaborate with team"],
-        ["Design UI mockups", "Implement new feature changes", "Conduct user testing"],
-        ["Data analysis", "Create presentation", "Attend team meeting"],
-        ["Build prototype", "Code refactoring", "Peer code review"],
-        ["Market research", "Prepare report", "Client meeting"],
-        ["Bug fixing", "Update documentation", "Code deployment"],
-        ["Algorithm optimization", "Write technical documentation", "Team coordination"],
-        ["User interface design", "Feature testing", "Customer support"],
-        ["Project planning", "Code integration", "Performance testing"],
-        ["System architecture design", "Code optimization", "User feedback analysis"],
-        ["Product demonstration", "Feature enhancement", "Usability testing"],
-        ["Quality assurance", "Technical support", "Code maintenance"],
-        ["API integration", "Code debugging", "Code review"],
-        ["Security analysis", "Feature prioritization", "End-to-end testing"]
-    ],
-    'ActiveTasks': [
-        [1, 1, 1], [1, 1, 0], [1, 1, 1],
-        [0, 1, 0], [1, 1, 1], [1, 1, 1],
-        [1, 0, 0], [1, 1, 1], [1, 1, 0],
-        [0, 1, 0], [0, 0, 1], [1, 1, 1],
-        [0, 0, 1], [1, 1, 1], [0, 0, 0]
-    ],
-    'TaskWeights': [
-        [0.8, 0.5, 0.7], [0.6, 0.4, 0.9], [1, 1, 1],
-        [0.7, 0.6, 0.8], [0.5, 0.7, 0.6], [0.9, 0.8, 0.4],
-        [0.6, 0.7, 0.5], [0.8, 0.4, 0.6], [0.7, 0.5, 0.8],
-        [0.5, 0.6, 0.7], [0.8, 0.7, 0.9], [0.6, 0.8, 0.7],
-        [0.7, 0.9, 0.6], [0.5, 0.6, 0.8], [0.9, 0.8, 0.7]
-    ]
-}
-
-# Create a DataFrame
-df = pd.DataFrame(data)
-
-# New Task to be compared
-new_task_name = "Design UI mockups"
+# Create DataFrame from the extracted data
+df = pd.DataFrame(employee_data, columns=["EmployeeID", "EmployeeName", "Tasks"])
 
 # Tokenize and remove stopwords from all task names
 stop_words = set(stopwords.words('english'))
-df['TokenizedTaskNames'] = df['TaskName'].apply(
-    lambda tasks: [' '.join([word.lower() for word in word_tokenize(task) if word.isalnum() and word.lower() not in stop_words]) for task in tasks]
+df['TokenizedTaskNames'] = df['Tasks'].apply(
+    lambda tasks: [' '.join([word.lower() for word in word_tokenize(task[0]) if word.isalnum() and word.lower() not in stop_words]) for task in tasks]
 )
+
+# New Task to be compared
+new_task_name = "Review code changes"
 
 # Tokenize and remove stopwords from the new task
 tokenized_new_task = ' '.join([word.lower() for word in word_tokenize(new_task_name) if word.isalnum() and word.lower() not in stop_words])
@@ -85,9 +100,8 @@ df['TaskRelevancy'] = cosine_similarities
 
 # Calculate relative availability for each employee based on the tasks they are currently working on
 df['RelativeAvailability'] = (
-    df.apply(lambda row: sum([row['TaskWeights'][idx] for idx in range(len(row['TasksID'])) if row['ActiveTasks'][idx] == 1]), axis=1) /
-    len(df['TaskWeights'].iloc[0])
-)  # Sum of task weights for each employee
+    df.apply(lambda row: sum([task[1] for task in row['Tasks'] if task[2]]) / sum([task[1] for task in row['Tasks']]), axis=1)
+)
 
 # Normalize the values for relative availability
 df['RelativeAvailability'] = df['RelativeAvailability'].transform(lambda x: 1 - ((x - x.min()) / (x.max() - x.min())))
@@ -97,6 +111,4 @@ df['Alpha'] = (0.7 * df['TaskRelevancy']) + (0.3 * df['RelativeAvailability'])
 
 # Display the top 5 entries based on 'Alpha'
 top_5_entries = df.nlargest(5, 'Alpha')
-# print(top_5_entries[['EmployeeID']])
-# Display the top 5 entries based on 'Alpha' without the index
-print(top_5_entries['EmployeeID'].to_string(index=False))
+print(top_5_entries[['EmployeeID']])
