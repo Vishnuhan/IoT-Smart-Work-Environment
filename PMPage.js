@@ -69,50 +69,63 @@ const TasksPage = ({ route }) => {
   const [newTaskDueDate, setNewTaskDueDate] = useState('');
   const [newTaskNumEmployees, setNewTaskNumEmployees] = useState(1);
   const [newTaskEmployees, setNewTaskEmployees] = useState([]);
+  const [employeeInputs, setEmployeeInputs] = useState([""]); // Tracks the value of each employee input
 
   // Function to handle the button click and update the right side
   const handleUpdateSampleEmployees = async() => {   
-      try {
+    if (!newTaskName) {
+      console.log("Please enter a task name before updating sample employees.");
+      return;
+    }  
+    try {
+        console.log("At the handleSampleEmployees API")
         // get user data
         const response = await axios.get('http://localhost:3001/auth/users');
 
         const user_Data = await axios.post('http://localhost:3001/auth/get-suggestions.py', {
           user_data: response.data,
+          new_task_name: newTaskName
+        });
+        console.log(user_Data.data);
+        const val = convertStringToJson()
+        const val_json = JSON.parse(val)
+        //console.log(typeof(val))
+        
+
+      // Set the employee names to the state
+      setNewTaskEmployees(val_json.map(name => name.EmployeeName));
+
+
+      // Function to convert the input string to JSON format
+      function convertStringToJson() {
+        // Split the string into lines
+        const lines = user_Data.data.trim().split('\n');
+
+        // Remove the header (first line)
+        lines.shift(); 
+
+        // Map each line to an object
+        const employees = lines.map(line => {
+          const [id, ...nameParts] = line.trim().split(' ');
+          const name = nameParts.join(' ');
+          return { id: parseInt(id, 10), EmployeeName: name };
         });
 
-        const rawOutput = user_Data.data;
-console.log('Raw Python script output:', rawOutput);
-console.log(typeof(rawOutput));
+        // Convert the array of objects into a JSON string
+        return JSON.stringify(employees, null, 2);
+      }
 
-// Initialize an empty array to store non-whitespace integers
-const nonWhitespaceIntegers = [];
+      // Using the function
+     const jsonOutput = convertStringToJson(user_Data.data);
 
-// Split the string into an array of strings using whitespace as a delimiter
-const words = rawOutput.split(/\s+/);
-
-// Iterate through each word in the array
-for (const word of words) {
-  // Parse the word as an integer
-  const num = parseInt(word);
-
-  // Check if the parsed value is a valid integer (not NaN)
-  if (!isNaN(num)) {
-    // Add the integer to the array
-    nonWhitespaceIntegers.push(num);
-  }
-}
-
-// Log the array of non-whitespace integers
-console.log('Non-whitespace integers:', nonWhitespaceIntegers);
+     console.log(jsonOutput);
 
       } catch (error) {
         console.error('Error fetching sample users:', error);
         setError('Error fetching users');
       }
     
-  
-    // // Always show 20 sample employees regardless of the input
-    // setNewTaskEmployees(Array.from({ length: 5 }, (_, index) => `Sample Employee ${index + 1}`));
+
   };
 
 
@@ -126,7 +139,7 @@ console.log('Non-whitespace integers:', nonWhitespaceIntegers);
     console.log('New Task:', {
       Name: newTaskName,
       DueDate: newTaskDueDate,
-      Employees: newTaskEmployees,
+      Employees: newInputEmployees,
     });
 
     // Close the modal after saving the task
@@ -138,26 +151,33 @@ console.log('Non-whitespace integers:', nonWhitespaceIntegers);
     setIsModalVisible(false);
   };
 
-  const renderEmployeeInput = (index) => (
-    <TextInput
-      key={index.toString()}
-      style={styles.inputField}
-      placeholder={`Employee ${index + 1}`}
-      onChangeText={(text) => {
-        const updatedEmployees = [...newTaskEmployees];
-        updatedEmployees[index] = text;
-        setNewTaskEmployees(updatedEmployees);
-      }}
-    />
-  );
-
-  const renderEmployeeInputs = () => {
-    const employeeInputs = [];
-    for (let i = 0; i < newTaskNumEmployees; i++) {
-      employeeInputs.push(renderEmployeeInput(i));
-    }
-    return employeeInputs;
+  // Function to update the number of employee inputs
+  const handleNumEmployeesChange = (numEmployees) => {
+    const clampedNumEmployees = Math.max(1, Math.min(5, numEmployees)); // Clamp between 1 and 5
+    setNewTaskNumEmployees(clampedNumEmployees);
+    setEmployeeInputs(employeeInputs.slice(0, clampedNumEmployees).concat(Array(Math.max(clampedNumEmployees - employeeInputs.length, 0)).fill("")));
   };
+
+  // Function to update individual employee input values
+  const handleEmployeeInputChange = (text, index) => {
+    const updatedInputs = [...employeeInputs];
+    updatedInputs[index] = text;
+    setEmployeeInputs(updatedInputs);
+  };
+
+  // Render employee input fields dynamically
+  const renderEmployeeInputs = () => {
+    return Array.from({ length: newTaskNumEmployees }, (_, index) => (
+      <TextInput
+        key={index}
+        style={styles.inputField}
+        placeholder={`Employee ${index + 1}`}
+        value={employeeInputs[index]}
+        onChangeText={(text) => handleEmployeeInputChange(text, index)}
+      />
+    ));
+  };
+
 
   return (
     <View>
@@ -209,8 +229,16 @@ console.log('Non-whitespace integers:', nonWhitespaceIntegers);
               <TouchableOpacity onPress={handleUpdateSampleEmployees} style={styles.updateButton}>
                 <Text style={styles.addButtonText}>Update Sample Employees</Text>
               </TouchableOpacity>
+
               {/* Render additional employee input fields based on the count */}
-              {renderEmployeeInputs()}
+                    <TextInput
+              style={styles.inputField}
+              placeholder="Number of Employees"
+              keyboardType="numeric"
+              value={String(newTaskNumEmployees)}
+              onChangeText={(text) => handleNumEmployeesChange(parseInt(text) || 1)}
+            />
+            {renderEmployeeInputs()}
               {/* Add more input fields as needed */}
             </View>
 

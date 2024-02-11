@@ -44,15 +44,18 @@ authRoutes.get('/users', async (req, res) => {
 authRoutes.post('/get-suggestions.py', (req, res) => {
   // Build the command to execute the Python script
   console.log('reached suggestions api');
-  const { user_data } = req.body;
+  const { user_data, new_task_name } = req.body;
+  //console.log(user_data);
+  console.log(new_task_name);
 
   // Convert user_data array to a JSON string
   const jsonData = JSON.stringify(user_data);
+  const jsonData2 = JSON.stringify(new_task_name);
 
   // Escape special characters to prevent potential security issues
   const sanitizedJsonData = jsonData.replace(/"/g, '\\"');
 
-  const command = `python suggestions.py "${sanitizedJsonData}"`;
+  const command = `python3 suggestions.py "${sanitizedJsonData}" "${new_task_name}" `;
 
   // Execute the command
   exec(command, (error, stdout, stderr) => {
@@ -217,6 +220,32 @@ authRoutes.post('/login', async (req, res) => {
   } catch (err) {
     console.error(err);
     return res.status(500).send('An error occurred during login.');
+  }
+});
+
+// Assuming you have an Express app set up
+authRoutes.post('addtask', async (req, res) => {
+  const { employeeId, taskName, taskSize } = req.body;
+  
+  try {
+    const updatedUser = await User.findOneAndUpdate(
+      { employeeId: employeeId },
+      { 
+        $push: { 
+          tasks: { taskName, taskSize, activeTask: true }
+        } 
+      },
+      { new: true } // Returns the updated document
+    );
+
+    if(updatedUser) {
+      res.status(200).json({ message: 'Task added successfully', updatedUser });
+    } else {
+      res.status(404).json({ message: 'Employee not found' });
+    }
+  } catch (error) {
+    console.error('Error adding task:', error);
+    res.status(500).json({ message: 'Error adding task to the database' });
   }
 });
 

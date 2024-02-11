@@ -12,54 +12,36 @@ import json
 # Access the first command-line argument (user_data)
 user_data = sys.argv[1]
 
-#employeesData = json.loads(user_data)
+#pass task name
+new_task_name = sys.argv[2]
 
-employeesData = [
-    {
-        "user": {
-            "_id": {
-                "$oid": "65bea199e634522f6ca380ee"
-            },
-            "employeeName": "Eva Anderson",
-            "employeeId": "EMP004",
-            "password": "evaPass",
-            "tasks": [
-                {
-                    "taskName": "Develop new feature",
-                    "taskSize": 0.5,
-                    "activeTask": True
-                },
-                {
-                    "taskName": "Review code changes",
-                    "taskSize": 0.3,
-                    "activeTask": False
-                }
-            ]
-        },
-    },
-    {
-        "user": {
-            "_id": {
-                "$oid": "65bea199e634522f6ca380easdsade"
-            },
-            "employeeName": "Eva Anderson But Guy",
-            "employeeId": "EMP004",
-            "password": "evaPass",
-            "tasks": [
-                {
-                    "taskName": "Design UI mockups",
-                    "taskSize": 0.1,
-                    "activeTask": True
-                },
-                {
-                    "taskName": "Review code changes",
-                    "taskSize": 0.3,
-                    "activeTask": False
-                }
-            ]
+
+
+
+def convert_to_desired_format(input_data):
+    converted_data = []
+    for entry in input_data:
+        user_data = {
+            "user": {
+                "_id": {"$oid": entry["_id"]},
+                "employeeName": entry["employeeName"],
+                "employeeId": entry["employeeId"],
+                "password": entry["password"],
+                "tasks": [
+                    {
+                        "taskName": task["taskName"],
+                        "taskSize": task["taskSize"] / 100,  # Convert taskSize to range between 0 and 1
+                        "activeTask": bool(task.get("activeTask", False))  # Convert to boolean, default to False if key doesn't exist
+                    }
+                    for task in entry.get("tasks", [])  # Handle cases where "tasks" key might not exist
+                ]
+            }
         }
-    }
-]
+        converted_data.append(user_data)
+    return converted_data
+
+input_data = json.loads(user_data)
+employeesData = convert_to_desired_format(input_data)
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -81,8 +63,8 @@ df['TokenizedTaskNames'] = df['Tasks'].apply(
     lambda tasks: [' '.join([word.lower() for word in word_tokenize(task[0]) if word.isalnum() and word.lower() not in stop_words]) for task in tasks]
 )
 
-# New Task to be compared
-new_task_name = "Review code changes"
+# # New Task to be compared
+#new_task_name = "Review code changes"
 
 # Tokenize and remove stopwords from the new task
 tokenized_new_task = ' '.join([word.lower() for word in word_tokenize(new_task_name) if word.isalnum() and word.lower() not in stop_words])
@@ -100,7 +82,7 @@ df['TaskRelevancy'] = cosine_similarities
 
 # Calculate relative availability for each employee based on the tasks they are currently working on
 df['RelativeAvailability'] = (
-    df.apply(lambda row: sum([task[1] for task in row['Tasks'] if task[2]]) / sum([task[1] for task in row['Tasks']]), axis=1)
+    df.apply(lambda row: sum([task[1] for task in row['Tasks'] if task[2]]) / sum([task[1] for task in row['Tasks']]) if sum([task[1] for task in row['Tasks']]) != 0 else 0, axis=1)
 )
 
 # Normalize the values for relative availability
@@ -111,4 +93,4 @@ df['Alpha'] = (0.7 * df['TaskRelevancy']) + (0.3 * df['RelativeAvailability'])
 
 # Display the top 5 entries based on 'Alpha'
 top_5_entries = df.nlargest(5, 'Alpha')
-print(top_5_entries[['EmployeeID']])
+print(top_5_entries[['EmployeeName']])

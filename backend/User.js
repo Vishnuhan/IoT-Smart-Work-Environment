@@ -16,7 +16,8 @@ const userSchema = new Schema({
   tasks: [
     {
         taskName: String,
-        taskSize: Number
+        taskSize: Number,
+        activeTask: Boolean
     }
   ]
 });

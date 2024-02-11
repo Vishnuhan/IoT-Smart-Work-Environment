@@ -67,8 +67,6 @@ const BookRoomPage = () => {
         console.log('Room is available for booking at this time');
         // Hide the modal
         setModalVisible(false);
-        // Show a success message to the user
-      // Alert('Booking Successful', `You have successfully booked ${room} at ${time}`);
         
         // Update the boolean value to false using the API
         await updateBookingStatus(room, time);
@@ -82,7 +80,11 @@ const BookRoomPage = () => {
         setModalVisible(false);
         // Show an error message to the user
       // Alert('Booking Unsuccessful', `Room ${room} is not available for booking at ${time}`);
-        Alert.alert('Booking Unsuccessful', `Room ${room} is not available for booking at ${time}`);
+      Alert.alert(
+        'Booking UnSuccessful',
+        [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+        { cancelable: false }
+      );
       }
     } catch (error) {
       console.error('Error handling booking:', error);
@@ -258,6 +260,22 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderRadius: 5,
     
-  }
+  },
+  alertContainer: {
+    backgroundColor: 'white',
+    borderWidth: 2,
+    borderColor: 'black',
+    borderRadius: 10,
+    padding: 20,
+    margin: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  alertText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: 'black',
+  },
 });
 export default BookRoomPage;
