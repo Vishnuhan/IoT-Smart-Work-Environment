@@ -7,7 +7,10 @@ const mongoose = require('mongoose');
 const User = require('./User');
 const Project = require('./Projects');
 const Room = require('./Rooms');
+const Task = require('./Tasks'); // Adjust the path as needed
+
 const { exec } = require('child_process');
+const { getSystemErrorMap } = require('util');
 
 
 const app = express();
@@ -223,25 +226,36 @@ authRoutes.post('/login', async (req, res) => {
   }
 });
 
-// Assuming you have an Express app set up
-authRoutes.post('addtask', async (req, res) => {
-  const { employeeId, taskName, taskSize } = req.body;
+// method to add tasks
+authRoutes.post('/addtask', async (req, res) => {
+  // Assuming the request body includes an array of employee names/IDs, task name, due date, and task size
+  const { employees, taskName, dueDate, taskSize } = req.body;
   
   try {
-    const updatedUser = await User.findOneAndUpdate(
-      { employeeId: employeeId },
-      { 
-        $push: { 
-          tasks: { taskName, taskSize, activeTask: true }
-        } 
-      },
-      { new: true } // Returns the updated document
+    console.log("In the Add Task API");
+
+    // Assuming each employee is identified by a unique name or ID in the employees array
+    // Update each employee with the new task
+    const task = { taskName, taskSize, activeTask: true }; // Prepare the task object
+
+    const updates = employees.map(employeeName =>
+      User.findOneAndUpdate(
+        { employeeName: employeeName },
+        { $push: { tasks: task }},
+        { new: true }
+      )
     );
 
-    if(updatedUser) {
-      res.status(200).json({ message: 'Task added successfully', updatedUser });
+    // Execute all the update operations
+    const updatedUsers = await Promise.all(updates);
+
+    // Filter out any null responses, in case some employee IDs were not found
+    const successfulUpdates = updatedUsers.filter(user => user !== null);
+
+    if(successfulUpdates.length > 0) {
+      res.status(200).json({ message: `${successfulUpdates.length} tasks added successfully`, updatedUsers: successfulUpdates });
     } else {
-      res.status(404).json({ message: 'Employee not found' });
+      res.status(404).json({ message: 'No employees found to add tasks' });
     }
   } catch (error) {
     console.error('Error adding task:', error);
@@ -250,10 +264,11 @@ authRoutes.post('addtask', async (req, res) => {
 });
 
 
+
 app.use('/auth', authRoutes);
 app.use('/auth', projectRoutes);
 app.use('/auth', roomRoutes);
-
+app.use('/auth', taskRoutes);
 
 
 // Listen on all network interfaces

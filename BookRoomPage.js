@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Alert, Modal, Picker, Button, ScrollView } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  Modal,
+  Picker,
+  Button,
+  ScrollView,
+} from 'react-native';
 import axios from 'axios';
 
 const BookRoomPage = () => {
@@ -21,7 +31,7 @@ const BookRoomPage = () => {
       console.log(response.data);
 
       // Return the relevant data, e.g., response.data.booked
-      return response.data
+      return response.data;
     } catch (error) {
       console.error(`Error fetching ${room} data:`, error);
       // Handle error appropriately
@@ -55,65 +65,44 @@ const BookRoomPage = () => {
 
   const handleConfirmBooking = async (room, time) => {
     try {
-      // console.log(room);
-      // console.log(time);
-  
-      // handle case if can book for that time or not
       const { booked } = await fetchRoomData(room, time);
-      
-      // if booked -> true, 
+
       if (booked) {
-        // Room is occupied
         console.log('Room is available for booking at this time');
-        // Hide the modal
         setModalVisible(false);
-        
-        // Update the boolean value to false using the API
         await updateBookingStatus(room, time);
-        // Handle accordingly, e.g., show a message to the user
         Alert.alert('Booking Successful', `You have successfully booked ${room} at ${time}`);
-      }
-      // if booked -> false
-      else {
-        // Room is available
+      } else {
         console.log('Not available for this time');
         setModalVisible(false);
-        // Show an error message to the user
-      // Alert('Booking Unsuccessful', `Room ${room} is not available for booking at ${time}`);
-      Alert.alert(
-        'Booking UnSuccessful',
-        [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
-        { cancelable: false }
-      );
+        Alert.alert(
+          'Booking UnSuccessful',
+          'Room is not available for booking at this time.',
+          [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+          { cancelable: false }
+        );
       }
     } catch (error) {
       console.error('Error handling booking:', error);
-      // Handle error appropriately
       Alert.alert('Error', 'An error occurred while processing your booking. Please try again.');
     }
   };
- 
-  
-  // Function to update the boolean value using the API
-const updateBookingStatus = async (room, time) => {
-  try {
-    await axios.put(`http://localhost:3001/auth/rooms/${room}/times/${time}`);
-  } catch (error) {
-    console.error(`Error updating booking status for ${room} at ${time}:`, error);
-    // Handle error appropriately
-  }
-};
-  
+
+  const updateBookingStatus = async (room, time) => {
+    try {
+      await axios.put(`http://localhost:3001/auth/rooms/${room}/times/${time}`);
+    } catch (error) {
+      console.error(`Error updating booking status for ${room} at ${time}:`, error);
+    }
+  };
 
   return (
     <ScrollView
       style={{ flex: 1 }}
       horizontal={true}
-      contentContainerStyle={{ width: 800, paddingHorizontal: 16 }}
+      contentContainerStyle={styles.contentContainerStyle}
     >
-      <View>
-        
-
+      <View style={styles.svgContainer}>
         {/* SVG floor plan */}
         <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
         <rect x="10" y="10" width="780" height="580" fill="lightgrey" stroke="black" stroke-width="2"/>
@@ -151,59 +140,92 @@ const updateBookingStatus = async (room, time) => {
         </svg>
 
         {/* Selected Room */}
-        {selectedRoom && (
-          <View>
-            <Text>Selected Room: {selectedRoom}</Text>
-            <TouchableOpacity onPress={() => setModalVisible(true)}>
+        {/* {selectedRoom && (
+          <View style={styles.selectedRoomContainer}>
+            <Text style={styles.selectedRoomText}>Selected Room: {selectedRoom}</Text>
+            <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
               <Text>Confirm</Text>
             </TouchableOpacity>
           </View>
-        )}
+        )} */}
 
         {/* Modal for Booking */}
         <Modal
-  animationType="slide"
-  transparent={true}
-  visible={modalVisible}
-  onRequestClose={() => {
-    setModalVisible(false);
-  }}
->
-  <View style={styles.modalContainer}>
-    <Text>Room Name: {selectedRoom}</Text>
-    <Text>Select Time:</Text>
-    <View style={styles.pickerContainer}>
-      <Picker
-        selectedValue={selectedTime}
-        onValueChange={(itemValue) => setSelectedTime(itemValue)}
-        style = {styles.pickerStyle}
-      >
-        <Picker.Item label="10:00 AM - 11:00 AM" value="10:00 AM - 11:00 AM" />
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalText}>Room Name: {selectedRoom}</Text>
+            <Text>Select Time:</Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={selectedTime}
+                onValueChange={(itemValue) => setSelectedTime(itemValue)}
+                style={styles.pickerStyle}
+              >
+                <Picker.Item label="10:00 AM - 11:00 AM" value="10:00 AM - 11:00 AM" />
                 <Picker.Item label="11:00 AM - 12:00 PM" value="11:00 AM - 12:00 PM" />
                 <Picker.Item label="12:00 PM - 1:00 PM" value="12:00 PM - 1:00 PM" />
                 <Picker.Item label="1:00 PM - 2:00 PM" value="1:00 PM - 2:00 PM" />
                 <Picker.Item label="2:00 PM - 3:00 PM" value="2:00 PM - 3:00 PM" />
                 <Picker.Item label="3:00 PM - 4:00 PM" value="3:00 PM - 4:00 PM" />
                 <Picker.Item label="4:00 PM - 5:00 PM" value="4:00 PM - 5:00 PM" />
-            </Picker>
-    </View>
-    <Button style = {styles.finalConfirmationBtn} title="Confirm Booking" onPress={() => handleConfirmBooking(selectedRoom, selectedTime)} />
-  </View>
-</Modal>
+            
+              </Picker>
+            </View>
+            <Button title="Confirm Booking" onPress={() => handleConfirmBooking(selectedRoom, selectedTime)} />
+          </View>
+        </Modal>
       </View>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
+  contentContainerStyle: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  header: {
-    fontSize: 24,
+  svgContainer: {
+    width: 800, // Width of your SVG
+    height: 600, // Height of your SVG
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  // Add other styles here as previously defined
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    margin: 10,
+  },
+  modalText: {
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: 10,
+    color: 'white',
+  },
+  pickerContainer: {
+    width: '100%',
+    marginBottom: 10,
+  },
+  pickerStyle: {
+    height: 50,
+    width: '100%',
+    backgroundColor: 'white',
+    color: 'black',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    paddingLeft: 10,
+    paddingRight: 10,
   },
   selectedRoomContainer: {
     marginTop: 16,
@@ -220,62 +242,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
   },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    margin: 10,
-  },
-  modalText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: 'white',
-  },
-
-  pickerContainer: {
-    width: '100%', // Ensure the Picker takes the full width
-    marginBottom: 10, // Add margin as needed
-  },
-  
-  pickerStyle: {
-    height: 50, // Adjust the height as needed
-    width: '100%',
-    backgroundColor: 'white', // Set background color
-    color: 'black', // Set text color
-    borderRadius: 10, // Set border radius
-    borderWidth: 1, // Set border width
-    borderColor: 'gray', // Set border color
-    paddingLeft: 10, // Add padding left as needed
-    paddingRight: 10, // Add padding right as needed
-  },
-
-  finalConfirmationBtn: {
-    borderRadius: 20,
-  },
-
-  confirmbutton: {
-    marginTop: 10,
-    borderRadius: 5,
-    
-  },
-  alertContainer: {
-    backgroundColor: 'white',
-    borderWidth: 2,
-    borderColor: 'black',
-    borderRadius: 10,
-    padding: 20,
-    margin: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  alertText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: 'black',
-  },
 });
+
 export default BookRoomPage;

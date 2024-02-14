@@ -66,7 +66,8 @@ const TasksPage = ({ route }) => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newTaskName, setNewTaskName] = useState('');
-  const [newTaskDueDate, setNewTaskDueDate] = useState('');
+  const [newTaskDueDate, setNewTaskDueDate] = useState(''); 
+  const [newTaskSize, setNewTaskSize] = useState('');
   const [newTaskNumEmployees, setNewTaskNumEmployees] = useState(1);
   const [newTaskEmployees, setNewTaskEmployees] = useState([]);
   const [employeeInputs, setEmployeeInputs] = useState([""]); // Tracks the value of each employee input
@@ -133,18 +134,33 @@ const TasksPage = ({ route }) => {
     setIsModalVisible(true);
   };
 
-  const handleSaveTask = () => {
-    // Add your logic to save the new task
-    // For now, let's just log the task details
-    console.log('New Task:', {
-      Name: newTaskName,
-      DueDate: newTaskDueDate,
-      Employees: newInputEmployees,
-    });
-
-    // Close the modal after saving the task
-    setIsModalVisible(false);
+  const handleSaveTask = async () => {
+    // Assuming you have states for task name, due date, and possibly other details
+    // For simplicity, let's assume newTaskName, newTaskDueDate, and newTaskSize are already defined
+  
+    // Prepare the task details including the employee inputs
+    const taskDetails = {
+      taskName: newTaskName,
+      dueDate: newTaskDueDate,
+      taskSize: newTaskSize, // This should be defined similar to newTaskName and newTaskDueDate
+      employees: employeeInputs.filter(input => input.trim() !== ''), // Filter out any empty strings
+    };
+  
+    try {
+      // Make the API call to submit the task details
+      // Adjust the URL and request payload according to your backend API
+      await axios.post('http://localhost:3001/auth/addtask', taskDetails);
+      console.log('Task successfully added with employees');
+  
+      // Handle any post-save actions, like closing the modal or clearing the form
+      setIsModalVisible(false);
+      // Optionally, clear the form fields or refresh the list of tasks
+    } catch (error) {
+      console.error('Error adding task with employees:', error);
+      // Handle error, possibly setting an error state to display an error message
+    }
   };
+  
 
   const handleCloseModal = () => {
     // Close the modal without saving the task
@@ -218,7 +234,7 @@ const TasksPage = ({ route }) => {
               <TextInput
                 style={styles.inputField}
                 placeholder="Task Size"
-                onChangeText={(text) => setNewTaskDueDate(text)}
+                onChangeText={(text) => setNewTaskSize(text)}
               />
               <TextInput
                 style={styles.inputField}
@@ -582,6 +598,3 @@ const styles = StyleSheet.create({
 });
 
 export default PMPage;
-
-
-
