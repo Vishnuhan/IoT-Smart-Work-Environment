@@ -6,7 +6,13 @@ const projectSchema = new Schema({
   Percentage_Complete: Number,
   Team: [String],
   Due_Date: String,
-  Tasks: [String],
+  Tasks: [{
+    taskName: String,
+    taskPhase: String,
+    taskComplete: Boolean, 
+    employees: [String], 
+  }
+      ],
 });
 
 module.exports = mongoose.model('projects', projectSchema);

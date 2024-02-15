@@ -7,7 +7,6 @@ const mongoose = require('mongoose');
 const User = require('./User');
 const Project = require('./Projects');
 const Room = require('./Rooms');
-const Task = require('./Tasks'); // Adjust the path as needed
 
 const { exec } = require('child_process');
 const { getSystemErrorMap } = require('util');
@@ -119,10 +118,30 @@ projectRoutes.post('/projects', async (req, res) => {
   }
 });
 
+// Endpoint to fetch tasks based on project name and phase
+projectRoutes.get('/tasks/:projectName/:phaseName', (req, res) => {
+  console.log('We are in the task specific API');
+  try{
+  const projectName = req.params.projectName;
+  const phaseName = req.params.phaseName;
+
+  // Assuming tasks are stored in an array of objects
+  // Replace this logic with your actual data fetching mechanism (e.g., database query)
+  const tasksForPhase = tasks.filter(task => task.projectName === projectName && task.phase === phaseName);
+
+  console.log(tasksForPhase)
+  res.json(tasksForPhase);
+}
+  catch(err){
+    console.error(err);
+    return res.status(500).send('An error occurred while getting the tasks.');
+  }
+});
+
 const roomRoutes = express.Router();
 
 roomRoutes.get('/rooms/:roomName/times/:times', async (req, res) => {
-  console.log('Fetching room data from the database');
+ 
   try {
     const { roomName, times } = req.params;
 
@@ -182,12 +201,11 @@ roomRoutes.put('/rooms/:roomName/times/:times', async (req, res) => {
 
 
 projectRoutes.get('/projects', async (req, res) => {
-  console.log('Fetching projects from the database');
   try {
     // Fetch all projects from MongoDB
     const projects = await Project.find();
     res.json(projects);
-    console.log(projects)
+
   } catch (err) {
     console.error(err);
     return res.status(500).send('An error occurred while fetching projects.');
@@ -268,7 +286,7 @@ authRoutes.post('/addtask', async (req, res) => {
 app.use('/auth', authRoutes);
 app.use('/auth', projectRoutes);
 app.use('/auth', roomRoutes);
-app.use('/auth', taskRoutes);
+
 
 
 // Listen on all network interfaces

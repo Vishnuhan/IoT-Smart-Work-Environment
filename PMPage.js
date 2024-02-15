@@ -9,7 +9,7 @@ import { View,
   Modal,
   TextInput,
   Button, } from 'react-native';
-import { projects, tasks } from './dummyData'; // Import the dummy data
+//import { projects, tasks } from './dummyData'; // Import the dummy data
 import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import axios from 'axios';  // Import axios for API requests
@@ -51,19 +51,20 @@ const PhasePage = ({ route }) => {
 
 const renderTaskCard = (task) => (
   <View style={styles.taskCard}>
-    <Text style={styles.taskName}>Task Name: {task.TaskName}</Text>
-    <Text style={styles.phase}>Phase: {task.Phase}</Text>
+    <Text style={styles.taskName}>Task Name: {task.taskName}</Text>
+    <Text style={styles.phase}>Phase: {task.taskPhase}</Text>
     <Text style={styles.completionStatus}>
-      Completion Status: {task.Complete ? 'Complete' : 'Incomplete'}
+      Completion Status: {task.taskComplete ? 'Complete' : 'Incomplete'}
     </Text>
+    <Text style={styles.employees}>
+      Employees: {task.employees ? task.employees.join(', ') : 'None'}
+    </Text>
+
   </View>
 );
 
 const TasksPage = ({ route }) => {
   const { phase, projectName } = route.params;
-  const tasksForPhase = tasks.filter((task) => task.Phase === phase.name);
-  const navigation = useNavigation();
-
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newTaskName, setNewTaskName] = useState('');
   const [newTaskDueDate, setNewTaskDueDate] = useState(''); 
@@ -71,8 +72,30 @@ const TasksPage = ({ route }) => {
   const [newTaskNumEmployees, setNewTaskNumEmployees] = useState(1);
   const [newTaskEmployees, setNewTaskEmployees] = useState([]);
   const [employeeInputs, setEmployeeInputs] = useState([""]); // Tracks the value of each employee input
+  const [projectTasks, setProjectTasks] = useState([]);
 
-  // Function to handle the button click and update the right side
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/auth/projects');
+        const project = response.data.find(p => p.Name === projectName);
+        console.log("Project found:", project); // Debug log
+
+        if (project) {
+          const tasksForPhase = project.Tasks.filter(t => t.taskPhase === phase.name);
+          console.log("Tasks for phase:", tasksForPhase); // Debug log
+          setProjectTasks(tasksForPhase);
+        }
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      }
+    };
+
+    fetchTasks();
+  }, [phase.name, projectName]);
+
+  
+    // Function to handle the button click and update the right side
   const handleUpdateSampleEmployees = async() => {   
     if (!newTaskName) {
       console.log("Please enter a task name before updating sample employees.");
@@ -205,7 +228,7 @@ const TasksPage = ({ route }) => {
         </TouchableOpacity>
       </View>
       <FlatList
-        data={tasksForPhase}
+        data={projectTasks}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => renderTaskCard(item)}
       />
@@ -356,13 +379,31 @@ const AllScreen = () => {
 
 const OngoingScreen = () => {
   const navigation = useNavigation();
+  const [projects, setProjects] = useState([]); // Define projects state here
+
+  useEffect(() => {
+    // Fetch projects data
+    const fetchProjects = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/auth/projects');
+        setProjects(response.data);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  // Filter for ongoing projects
+  const ongoingProjects = projects.filter((project) => project.Percentage_Complete < 100);
 
   return (
     <ScrollView>
       <View>
         <Text style={styles.mytext}>Ongoing Projects</Text>
         <FlatList
-          data={projects.filter((project) => project.Percentage_Complete < 100)}
+          data={ongoingProjects}
           keyExtractor={(item) => item.Name}
           renderItem={({ item }) => renderProjectCard(navigation, item)}
         />
@@ -371,15 +412,34 @@ const OngoingScreen = () => {
   );
 };
 
+
 const CompletedScreen = () => {
   const navigation = useNavigation();
+  const [projects, setProjects] = useState([]); // Define projects state here
+
+  useEffect(() => {
+    // Fetch projects data
+    const fetchProjects = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/auth/projects');
+        setProjects(response.data);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  // Filter for completed projects
+  const completedProjects = projects.filter((project) => project.Percentage_Complete === 100);
 
   return (
     <ScrollView>
       <View>
         <Text style={styles.mytext}>Completed Projects</Text>
         <FlatList
-          data={projects.filter((project) => project.Percentage_Complete === 100)}
+          data={completedProjects}
           keyExtractor={(item) => item.Name}
           renderItem={({ item }) => renderProjectCard(navigation, item)}
         />
@@ -595,6 +655,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
   },
+  employees: {
+    fontSize: 16,
+    color: '#555',
+    marginBottom: 8,
+  },
+  
 });
 
 export default PMPage;
