@@ -67,12 +67,13 @@ const TasksPage = ({ route }) => {
   const { phase, projectName } = route.params;
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newTaskName, setNewTaskName] = useState('');
-  const [newTaskDueDate, setNewTaskDueDate] = useState(''); 
+  const [newTaskPhase, setNewTaskPhase] = useState(''); 
   const [newTaskSize, setNewTaskSize] = useState('');
   const [newTaskNumEmployees, setNewTaskNumEmployees] = useState(1);
   const [newTaskEmployees, setNewTaskEmployees] = useState([]);
   const [employeeInputs, setEmployeeInputs] = useState([""]); // Tracks the value of each employee input
   const [projectTasks, setProjectTasks] = useState([]);
+  const [newProjectName, setNewProjectName] = useState();
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -159,21 +160,23 @@ const TasksPage = ({ route }) => {
 
   const handleSaveTask = async () => {
     // Assuming you have states for task name, due date, and possibly other details
-    // For simplicity, let's assume newTaskName, newTaskDueDate, and newTaskSize are already defined
-  
     // Prepare the task details including the employee inputs
     const taskDetails = {
+      project: newProjectName,
       taskName: newTaskName,
-      dueDate: newTaskDueDate,
-      taskSize: newTaskSize, // This should be defined similar to newTaskName and newTaskDueDate
+      taskPhase: newTaskPhase,
+      taskSize: newTaskSize, 
       employees: employeeInputs.filter(input => input.trim() !== ''), // Filter out any empty strings
     };
   
     try {
       // Make the API call to submit the task details
       // Adjust the URL and request payload according to your backend API
-      await axios.post('http://localhost:3001/auth/addtask', taskDetails);
-      console.log('Task successfully added with employees');
+       await axios.post('http://localhost:3001/auth/addtask', taskDetails);
+       console.log('Task successfully added with employees');
+
+      await axios.post('http://localhost:3001/auth/addtasktoproject', taskDetails);
+      console.log('Task successfully added to project data');
   
       // Handle any post-save actions, like closing the modal or clearing the form
       setIsModalVisible(false);
@@ -246,13 +249,18 @@ const TasksPage = ({ route }) => {
               <Text style={styles.modalTitle}>Add Task</Text>
               <TextInput
                 style={styles.inputField}
+                placeholder="Project Name"
+                onChangeText={(text) => setNewProjectName(text)}
+              />
+              <TextInput
+                style={styles.inputField}
                 placeholder="Task Name"
                 onChangeText={(text) => setNewTaskName(text)}
               />
               <TextInput
                 style={styles.inputField}
-                placeholder="Due Date"
-                onChangeText={(text) => setNewTaskDueDate(text)}
+                placeholder="Phase"
+                onChangeText={(text) => setNewTaskPhase(text)}
               />
               <TextInput
                 style={styles.inputField}

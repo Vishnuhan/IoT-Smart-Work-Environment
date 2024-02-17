@@ -101,15 +101,35 @@ authRoutes.post('/register', async (req, res) => {
 // Project routes
 const projectRoutes = express.Router();
 
-projectRoutes.post('/projects', async (req, res) => {
-  const projectData = req.body;
-  console.log('We are in the projects API');
-  try {
-    // Save project data to MongoDB
-    // Assuming you have a Project model similar to User model
-    const newProject = new Project(projectData);
-    await newProject.save();
+// projectRoutes.post('/projects', async (req, res) => {
+//   const projectData = req.body;
+//   console.log('We are in the projects API');
+//   try {
+//     // Save project data to MongoDB
+//     // Assuming you have a Project model similar to User model
+//     const newProject = new Project(projectData);
+//     await newProject.save();
 
+//     res.send('Project added successfully.');
+//     console.log('Project Added Successfully');
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(500).send('An error occurred while adding the project.');
+//   }
+// });
+
+projectRoutes.post('/projects', async (req, res) => {
+  const { Name, Percentage_Complete, Due_Date, Team } = req.body;
+  
+  try {
+    const newProject = new Project({
+      Name,
+      Percentage_Complete,
+      Due_Date,
+      Team,
+      // Initially, you can either omit the Tasks field or set it as an empty array
+    });
+    await newProject.save();
     res.send('Project added successfully.');
     console.log('Project Added Successfully');
   } catch (err) {
@@ -118,25 +138,44 @@ projectRoutes.post('/projects', async (req, res) => {
   }
 });
 
-// Endpoint to fetch tasks based on project name and phase
-projectRoutes.get('/tasks/:projectName/:phaseName', (req, res) => {
-  console.log('We are in the task specific API');
-  try{
-  const projectName = req.params.projectName;
-  const phaseName = req.params.phaseName;
+module.exports = projectRoutes; // Ensure you export the routes
 
-  // Assuming tasks are stored in an array of objects
-  // Replace this logic with your actual data fetching mechanism (e.g., database query)
-  const tasksForPhase = tasks.filter(task => task.projectName === projectName && task.phase === phaseName);
+projectRoutes.post('/addtasktoproject', async (req, res) => {
+  const { project, taskName, taskPhase, taskSize, employees } = req.body;
 
-  console.log(tasksForPhase)
-  res.json(tasksForPhase);
-}
-  catch(err){
-    console.error(err);
-    return res.status(500).send('An error occurred while getting the tasks.');
+  try {
+    // Find the project by name
+    const foundProject = await Project.findOne({ Name: project });
+
+    if (!foundProject) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+
+    // Prepare the new task object with provided details
+    const newTask = {
+      taskName,
+      taskPhase,
+      taskComplete: false, // Assuming a new task is not complete
+      employees, // Assuming this is an array of employee names/IDs
+    };
+
+    // Add the new task to the project's Tasks array
+    foundProject.Tasks.push(newTask);
+
+    // Calculate the updated completion percentage if necessary
+    // This is a placeholder for any logic you might have to update the project completion percentage
+
+    // Save the updated project back to the database
+    const updatedProject = await foundProject.save();
+
+    res.status(200).json({ message: 'Task successfully added to project', updatedProject });
+
+  } catch (error) {
+    console.error('Error adding task to project:', error);
+    res.status(500).json({ message: 'Error adding task to project in the database' });
   }
 });
+
 
 const roomRoutes = express.Router();
 
