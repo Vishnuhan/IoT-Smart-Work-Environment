@@ -1,40 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
+import BottomTabNavigator from './BottomTabNavigator';
 
 const AddProject = () => {
   const [projectName, setProjectName] = useState('');
   const [percentageComplete, setPercentageComplete] = useState('');
   const [team, setTeam] = useState('');
   const [dueDate, setDueDate] = useState('');
-  const [tasks, setTasks] = useState('');
+
+  //const navigation = useNavigation();
 
   const handleAddProject = async () => {
     try {
-      // Parse team and tasks as arrays
       const teamArray = team.split(',').map(item => item.trim());
-      const tasksArray = tasks.split(',').map(item => item.trim());
-
-      // Perform the logic to add a project (e.g., make an API call)
       const projectData = {
         Name: projectName,
-        Percentage_Complete: parseFloat(percentageComplete), // Convert to number
-        Team: teamArray,
+        Percentage_Complete: parseFloat(percentageComplete),
         Due_Date: dueDate,
-        Tasks: tasksArray,
+        Team: teamArray,
       };
 
-      console.log('About to enter API');
-      const response = await axios.post('http://localhost:3001/auth/projects', projectData);
-      console.log('Entered API');
-
-      // For simplicity, we'll just log the project details for now
+      await axios.post('http://localhost:3001/auth/projects', projectData);
       console.log('New Project Added:', projectData);
+  //    navigation.navigate('PMPage');
     } catch (error) {
       console.error('Error adding project:', error);
     }
-
-    // You may want to navigate back to the PMPage or perform other actions
   };
 
   return (
@@ -44,35 +37,30 @@ const AddProject = () => {
         style={styles.input}
         placeholder="Project Name"
         value={projectName}
-        onChangeText={(text) => setProjectName(text)}
+        onChangeText={setProjectName}
       />
       <TextInput
         style={styles.input}
         placeholder="Percentage Complete"
         keyboardType="numeric"
         value={percentageComplete}
-        onChangeText={(text) => setPercentageComplete(text)}
+        onChangeText={setPercentageComplete}
       />
       <TextInput
         style={styles.input}
         placeholder="Team (Comma-separated)"
         value={team}
-        onChangeText={(text) => setTeam(text)}
+        onChangeText={setTeam}
       />
       <TextInput
         style={styles.input}
         placeholder="Due Date"
         value={dueDate}
-        onChangeText={(text) => setDueDate(text)}
+        onChangeText={setDueDate}
       />
-      {/* <TextInput
-        style={styles.input}
-        placeholder="Tasks (Comma-separated)"
-        value={tasks}
-        onChangeText={(text) => setTasks(text)}
-      /> */}
       <Button title="Add Project" onPress={handleAddProject} />
     </View>
+    
   );
 };
 

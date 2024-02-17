@@ -61,7 +61,7 @@ const PMPage = () => {
       headerRight: () => (
         <TouchableOpacity
           style={{ marginRight: 20 }}
-          onPress={() => navigation.navigate('AddProjectPage')} // Replace with the correct navigation destination
+          onPress={() => navigation.navigate('AddProjectPage')}
         >
           <Icon name="add-box" size={30} color="#3498db" />
         </TouchableOpacity>
@@ -70,13 +70,15 @@ const PMPage = () => {
   }, [navigation]);
 
   return (
-    <Stack.Navigator initialRouteName="PMPage">
-      <Stack.Screen name="PMPage" component={PMTopTabNavigator} options={{ headerShown: false }} />
+    <Stack.Navigator initialRouteName="PMTopTabNavigator" headerMode="none">
+      <Stack.Screen name="PMTopTabNavigator" component={PMTopTabNavigator} />
       <Stack.Screen name="ProjectDetails" component={ProjectDetailsScreen} />
       <Stack.Screen name="Tasks" component={TasksPage} />
+      <Stack.Screen name="AddProjectPage" component={AddProjectPage} />
     </Stack.Navigator>
   );
 };
+
 
 const renderTaskCard = (task) => (
   <View style={styles.taskCard}>
@@ -95,13 +97,14 @@ const TasksPage = ({ route }) => {
   const { phase, projectName } = route.params;
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newTaskName, setNewTaskName] = useState('');
-  const [newTaskDueDate, setNewTaskDueDate] = useState('');
+  const [newTaskPhase, setNewTaskPhase] = useState('');
   const [newTaskSize, setNewTaskSize] = useState('');
   const [newTaskNumEmployees, setNewTaskNumEmployees] = useState(1);
   const [newTaskEmployees, setNewTaskEmployees] = useState([]);
   const [employeeInputs, setEmployeeInputs] = useState([""]);
 
   const [projectTasks, setProjectTasks] = useState([]);
+  const [newProjectName, setNewProjectName] = useState();
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -162,16 +165,29 @@ const TasksPage = ({ route }) => {
   };
 
   const handleSaveTask = async () => {
+    // Assuming you have states for task name, due date, and possibly other details
+    // Prepare the task details including the employee inputs
     const taskDetails = {
+      project: newProjectName,
       taskName: newTaskName,
+      taskPhase: newTaskPhase,
+      taskSize: newTaskSize, 
+      employees: employeeInputs.filter(input => input.trim() !== ''), // Filter out any empty strings
       dueDate: newTaskDueDate,
       taskSize: newTaskSize,
       employees: employeeInputs.filter((input) => input.trim() !== ''),
     };
 
     try {
-      await axios.post('http://localhost:3001/auth/addtask', taskDetails);
-      console.log('Task successfully added with employees');
+      // Make the API call to submit the task details
+      // Adjust the URL and request payload according to your backend API
+       await axios.post('http://localhost:3001/auth/addtask', taskDetails);
+       console.log('Task successfully added with employees');
+
+      await axios.post('http://localhost:3001/auth/addtasktoproject', taskDetails);
+      console.log('Task successfully added to project data');
+  
+      // Handle any post-save actions, like closing the modal or clearing the form
       setIsModalVisible(false);
     } catch (error) {
       console.error('Error adding task with employees:', error);
@@ -235,13 +251,18 @@ const TasksPage = ({ route }) => {
               <Text style={styles.modalTitle}>Add Task</Text>
               <TextInput
                 style={styles.inputField}
+                placeholder="Project Name"
+                onChangeText={(text) => setNewProjectName(text)}
+              />
+              <TextInput
+                style={styles.inputField}
                 placeholder="Task Name"
                 onChangeText={(text) => setNewTaskName(text)}
               />
               <TextInput
                 style={styles.inputField}
-                placeholder="Due Date"
-                onChangeText={(text) => setNewTaskDueDate(text)}
+                placeholder="Phase"
+                onChangeText={(text) => setNewTaskPhase(text)}
               />
               <TextInput
                 style={styles.inputField}
@@ -433,6 +454,201 @@ const PMTopTabNavigator = () => (
 
 const styles = StyleSheet.create({
   // ... your existing styles
+  phaseCardContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    margin: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+    flex: 1,
+  },
+  phaseCard: {
+    padding: 16,
+  },
+  phaseTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  phaseText: {
+    fontSize: 16,
+    color: '#555',
+  },
+  taskCard: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 16,
+    margin: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  taskName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  phase: {
+    color: '#555',
+    marginBottom: 8,
+  },
+  completionStatus: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: '#2ecc71',
+  },
+  projectCard: {
+    backgroundColor: '#fff',
+    padding: 10,
+    margin: 5,
+    borderRadius: 5,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  cardText: {
+    fontSize: 16,
+    font: "Quicksand",
+    marginBottom: 6,
+    color: '#555',
+  },
+  mytext: {
+    fontWeight: 'bold',
+    fontfamily: 'Roboto',
+    marginLeft: '10px',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  addButton: {
+    backgroundColor: '#3498db',
+    padding: 10,
+    borderRadius: 5,
+  },
+  updateButton: {
+    backgroundColor: '#2ecc71', // Green background color
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 15,
+    marginBottom: 20,
+  },
+  addButtonText: {
+    color: '#ffffff',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black background
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    overflow: 'hidden', // Ensure border-radius works as expected
+    width: '80%', // Adjust the width as needed
+    maxWidth: 400, // Maximum width for the modal
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    padding: 15,
+    backgroundColor: '#3498db', // Header background color
+    color: '#fff', // Header text color
+    textAlign: 'center',
+  },
+  inputField: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between', // or 'space-around' based on your preference
+    marginHorizontal: 20, // Adjust the margin as needed
+    marginTop: 20,
+    width: "150%"
+  },
+  buttonWrapper: {
+    flex: 1,
+    marginHorizontal: 10, // Add margin to each button
+  },
+  saveButton: {
+    backgroundColor: '#3498db',
+    padding: 12,
+    borderRadius: 8,
+    marginRight: 10, // Add margin to the right of "Save" button
+  },
+
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 10,
+    marginBottom: 10,
+    width: "100%"
+  },
+  buttonWrapper: {
+    flex: 1,
+    marginHorizontal: 10, // Add margin to each button
+  },
+  cancelButtonWrapper: {
+    flex: 1, // Set the same flex value for both buttons
+  },
+  cancelButton: {
+    padding: 12,
+    borderRadius: 8,
+    marginLeft: 10, // Add margin to the left of "Cancel" button
+  },
+  buttonText: {
+    color: '#ffffff',
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+
+  splitScreenContainer: {
+    flexDirection: 'row',
+    flex: 1,
+  },
+  leftSide: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#f0f0f0',
+  },
+  rightSide: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#e0e0e0',
+  },
+  sampleEmployee: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  employees: {
+    fontSize: 16,
+    color: '#555',
+    marginBottom: 8,
+  },
 
   mytext: {
     fontWeight: 'bold',
