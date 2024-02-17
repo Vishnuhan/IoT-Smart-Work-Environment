@@ -8,13 +8,21 @@ import homepage from './homepage';
 import PMPage from './PMPage';
 import BottomTabNavigator from './BottomTabNavigator';
 import BookRoomPage from './BookRoomPage';
+import OnboardingScreen from './OnboardScreen'; // Import the OnboardingScreen component
 
 const Stack = createStackNavigator();
 
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="LoginScreen">
+      <Stack.Navigator initialRouteName="Onboarding">
+        {/* Add OnboardingScreen as the initial screen */}
+        <Stack.Screen
+          name="Onboarding"
+          component={OnboardingScreen}
+          options={{ headerShown: false }}
+        />
+
         <Stack.Screen
           name="Register"
           component={RegisterScreen}
@@ -29,31 +37,30 @@ const App = () => {
 
         <Stack.Screen
           name="Home"
-          component={homepage} // Use a WebView component for home.html
+          component={homepage}
           options={{ headerShown: false }}
         />
 
-    <Stack.Screen
+        <Stack.Screen
           name="PMPage"
-          component={PMPage} // Use a WebView component for home.html
+          component={PMPage}
           options={{ headerShown: false }}
         />
 
-<Stack.Screen
+        <Stack.Screen
           name="BottomTabNav"
-          component={BottomTabNavigator} // Use a WebView component for home.html
+          component={BottomTabNavigator}
           options={{ headerShown: false }}
         />
 
-      <Stack.Screen
+        <Stack.Screen
           name="BookRoomPage"
-          component={BookRoomPage} // Use a WebView component for home.html
+          component={BookRoomPage}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
-
 
 export default App;

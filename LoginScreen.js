@@ -4,6 +4,8 @@ import { Button, Card, Title, Paragraph, IconButton } from 'react-native-paper';
 import BottomTabNavigator from './BottomTabNavigator';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
+import colors from './colors';  // Assuming colors.js is in the same directory
+
 
 const COLORS = {
   primary: '#075eec',
@@ -24,6 +26,7 @@ const LoginScreen = ({ navigation }) => {
       const response = await axios.post('http://localhost:3001/auth/login', loginData);
 
       if (employeeId === 'admin' && password === 'admin') {
+        navigation.navigate('Account', { employeeID: employeeId });
         setIsAdmin(true);
       }
 
