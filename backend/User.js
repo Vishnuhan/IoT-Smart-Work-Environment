@@ -1,6 +1,8 @@
 // User.js
 
 const mongoose = require('mongoose');
+const { exec } = require('child_process');
+
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -11,6 +13,13 @@ const userSchema = new Schema({
     required: true,
   },
   password: String,
+  tasks: [
+    {
+        taskName: String,
+        taskSize: Number,
+        activeTask: Boolean
+    }
+  ]
 });
 
 module.exports = mongoose.model('User', userSchema);

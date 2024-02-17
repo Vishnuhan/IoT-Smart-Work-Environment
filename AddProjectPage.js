@@ -65,12 +65,12 @@ const AddProject = () => {
         value={dueDate}
         onChangeText={(text) => setDueDate(text)}
       />
-      <TextInput
+      {/* <TextInput
         style={styles.input}
         placeholder="Tasks (Comma-separated)"
         value={tasks}
         onChangeText={(text) => setTasks(text)}
-      />
+      /> */}
       <Button title="Add Project" onPress={handleAddProject} />
     </View>
   );
