@@ -44,15 +44,7 @@ const BottomTabNavigator = ({ isAdmin }) => (
       }}
     />
 
-{isAdmin && (
-      <Tab.Screen
-        name="Add Project"
-        component={AddProjectPage}
-        options={{
-          tabBarIcon: ({ color, size }) => <Icon name="add-box" size={size} color={color} />,
-        }}
-      />
-    )}
+
 
   </Tab.Navigator>
 );

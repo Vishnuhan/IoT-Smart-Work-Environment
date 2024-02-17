@@ -1,6 +1,7 @@
-import {React, useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { View,
+import {
+  View,
   Text,
   FlatList,
   TouchableOpacity,
@@ -8,11 +9,14 @@ import { View,
   ScrollView,
   Modal,
   TextInput,
-  Button, } from 'react-native';
-//import { projects, tasks } from './dummyData'; // Import the dummy data
+  Button,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import axios from 'axios';  // Import axios for API requests
+import axios from 'axios';
+import AddProjectPage from './AddProjectPage'; // Adjust the import path as needed
+
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
@@ -49,6 +53,31 @@ const PhasePage = ({ route }) => {
   );
 };
 
+const PMPage = () => {
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          style={{ marginRight: 20 }}
+          onPress={() => navigation.navigate('AddProjectPage')} // Replace with the correct navigation destination
+        >
+          <Icon name="add-box" size={30} color="#3498db" />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
+
+  return (
+    <Stack.Navigator initialRouteName="PMPage">
+      <Stack.Screen name="PMPage" component={PMTopTabNavigator} options={{ headerShown: false }} />
+      <Stack.Screen name="ProjectDetails" component={ProjectDetailsScreen} />
+      <Stack.Screen name="Tasks" component={TasksPage} />
+    </Stack.Navigator>
+  );
+};
+
 const renderTaskCard = (task) => (
   <View style={styles.taskCard}>
     <Text style={styles.taskName}>Task Name: {task.taskName}</Text>
@@ -59,7 +88,6 @@ const renderTaskCard = (task) => (
     <Text style={styles.employees}>
       Employees: {task.employees ? task.employees.join(', ') : 'None'}
     </Text>
-
   </View>
 );
 
@@ -67,23 +95,22 @@ const TasksPage = ({ route }) => {
   const { phase, projectName } = route.params;
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newTaskName, setNewTaskName] = useState('');
-  const [newTaskDueDate, setNewTaskDueDate] = useState(''); 
+  const [newTaskDueDate, setNewTaskDueDate] = useState('');
   const [newTaskSize, setNewTaskSize] = useState('');
   const [newTaskNumEmployees, setNewTaskNumEmployees] = useState(1);
   const [newTaskEmployees, setNewTaskEmployees] = useState([]);
-  const [employeeInputs, setEmployeeInputs] = useState([""]); // Tracks the value of each employee input
+  const [employeeInputs, setEmployeeInputs] = useState([""]);
+
   const [projectTasks, setProjectTasks] = useState([]);
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
         const response = await axios.get('http://localhost:3001/auth/projects');
-        const project = response.data.find(p => p.Name === projectName);
-        console.log("Project found:", project); // Debug log
+        const project = response.data.find((p) => p.Name === projectName);
 
         if (project) {
-          const tasksForPhase = project.Tasks.filter(t => t.taskPhase === phase.name);
-          console.log("Tasks for phase:", tasksForPhase); // Debug log
+          const tasksForPhase = project.Tasks.filter((t) => t.taskPhase === phase.name);
           setProjectTasks(tasksForPhase);
         }
       } catch (error) {
@@ -94,117 +121,81 @@ const TasksPage = ({ route }) => {
     fetchTasks();
   }, [phase.name, projectName]);
 
-  
-    // Function to handle the button click and update the right side
-  const handleUpdateSampleEmployees = async() => {   
+  const handleUpdateSampleEmployees = async () => {
     if (!newTaskName) {
-      console.log("Please enter a task name before updating sample employees.");
+      console.log('Please enter a task name before updating sample employees.');
       return;
-    }  
+    }
+
     try {
-        console.log("At the handleSampleEmployees API")
-        // get user data
-        const response = await axios.get('http://localhost:3001/auth/users');
+      const response = await axios.get('http://localhost:3001/auth/users');
+      const user_Data = await axios.post('http://localhost:3001/auth/get-suggestions.py', {
+        user_data: response.data,
+        new_task_name: newTaskName,
+      });
 
-        const user_Data = await axios.post('http://localhost:3001/auth/get-suggestions.py', {
-          user_data: response.data,
-          new_task_name: newTaskName
-        });
-        console.log(user_Data.data);
-        const val = convertStringToJson()
-        const val_json = JSON.parse(val)
-        //console.log(typeof(val))
-        
+      const val = convertStringToJson();
+      const val_json = JSON.parse(val);
 
-      // Set the employee names to the state
-      setNewTaskEmployees(val_json.map(name => name.EmployeeName));
+      setNewTaskEmployees(val_json.map((name) => name.EmployeeName));
 
-
-      // Function to convert the input string to JSON format
       function convertStringToJson() {
-        // Split the string into lines
         const lines = user_Data.data.trim().split('\n');
-
-        // Remove the header (first line)
-        lines.shift(); 
-
-        // Map each line to an object
-        const employees = lines.map(line => {
+        lines.shift();
+        const employees = lines.map((line) => {
           const [id, ...nameParts] = line.trim().split(' ');
           const name = nameParts.join(' ');
           return { id: parseInt(id, 10), EmployeeName: name };
         });
-
-        // Convert the array of objects into a JSON string
         return JSON.stringify(employees, null, 2);
       }
 
-      // Using the function
-     const jsonOutput = convertStringToJson(user_Data.data);
-
-     console.log(jsonOutput);
-
-      } catch (error) {
-        console.error('Error fetching sample users:', error);
-        setError('Error fetching users');
-      }
-    
-
+      const jsonOutput = convertStringToJson(user_Data.data);
+      console.log(jsonOutput);
+    } catch (error) {
+      console.error('Error fetching sample users:', error);
+    }
   };
-
 
   const handleAddTask = () => {
     setIsModalVisible(true);
   };
 
   const handleSaveTask = async () => {
-    // Assuming you have states for task name, due date, and possibly other details
-    // For simplicity, let's assume newTaskName, newTaskDueDate, and newTaskSize are already defined
-  
-    // Prepare the task details including the employee inputs
     const taskDetails = {
       taskName: newTaskName,
       dueDate: newTaskDueDate,
-      taskSize: newTaskSize, // This should be defined similar to newTaskName and newTaskDueDate
-      employees: employeeInputs.filter(input => input.trim() !== ''), // Filter out any empty strings
+      taskSize: newTaskSize,
+      employees: employeeInputs.filter((input) => input.trim() !== ''),
     };
-  
+
     try {
-      // Make the API call to submit the task details
-      // Adjust the URL and request payload according to your backend API
       await axios.post('http://localhost:3001/auth/addtask', taskDetails);
       console.log('Task successfully added with employees');
-  
-      // Handle any post-save actions, like closing the modal or clearing the form
       setIsModalVisible(false);
-      // Optionally, clear the form fields or refresh the list of tasks
     } catch (error) {
       console.error('Error adding task with employees:', error);
-      // Handle error, possibly setting an error state to display an error message
     }
   };
-  
 
   const handleCloseModal = () => {
-    // Close the modal without saving the task
     setIsModalVisible(false);
   };
 
-  // Function to update the number of employee inputs
   const handleNumEmployeesChange = (numEmployees) => {
-    const clampedNumEmployees = Math.max(1, Math.min(5, numEmployees)); // Clamp between 1 and 5
+    const clampedNumEmployees = Math.max(1, Math.min(5, numEmployees));
     setNewTaskNumEmployees(clampedNumEmployees);
-    setEmployeeInputs(employeeInputs.slice(0, clampedNumEmployees).concat(Array(Math.max(clampedNumEmployees - employeeInputs.length, 0)).fill("")));
+    setEmployeeInputs(
+      employeeInputs.slice(0, clampedNumEmployees).concat(Array(Math.max(clampedNumEmployees - employeeInputs.length, 0)).fill(''))
+    );
   };
 
-  // Function to update individual employee input values
   const handleEmployeeInputChange = (text, index) => {
     const updatedInputs = [...employeeInputs];
     updatedInputs[index] = text;
     setEmployeeInputs(updatedInputs);
   };
 
-  // Render employee input fields dynamically
   const renderEmployeeInputs = () => {
     return Array.from({ length: newTaskNumEmployees }, (_, index) => (
       <TextInput
@@ -216,7 +207,6 @@ const TasksPage = ({ route }) => {
       />
     ));
   };
-
 
   return (
     <View>
@@ -241,7 +231,6 @@ const TasksPage = ({ route }) => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.splitScreenContainer}>
-            {/* Left Side: Input Fields */}
             <View style={styles.leftSide}>
               <Text style={styles.modalTitle}>Add Task</Text>
               <TextInput
@@ -264,24 +253,18 @@ const TasksPage = ({ route }) => {
                 placeholder="Number of Employees"
                 onChangeText={(text) => setNewTaskNumEmployees(parseInt(text) || 0)}
               />
-              {/* Button to update sample employees */}
               <TouchableOpacity onPress={handleUpdateSampleEmployees} style={styles.updateButton}>
                 <Text style={styles.addButtonText}>Update Sample Employees</Text>
               </TouchableOpacity>
-
-              {/* Render additional employee input fields based on the count */}
-                    <TextInput
-              style={styles.inputField}
-              placeholder="Number of Employees"
-              keyboardType="numeric"
-              value={String(newTaskNumEmployees)}
-              onChangeText={(text) => handleNumEmployeesChange(parseInt(text) || 1)}
-            />
-            {renderEmployeeInputs()}
-              {/* Add more input fields as needed */}
+              <TextInput
+                style={styles.inputField}
+                placeholder="Number of Employees"
+                keyboardType="numeric"
+                value={String(newTaskNumEmployees)}
+                onChangeText={(text) => handleNumEmployeesChange(parseInt(text) || 1)}
+              />
+              {renderEmployeeInputs()}
             </View>
-
-            {/* Right Side: Sample Employees */}
             <View style={styles.rightSide}>
               <Text style={styles.modalTitle}>AI Suggestion</Text>
               <FlatList
@@ -293,14 +276,10 @@ const TasksPage = ({ route }) => {
               />
             </View>
           </View>
-
-          {/* Common Buttons for Both Sides */}
           <View style={styles.modalButtons}>
-            {/* <Button title="Save" onPress={handleSaveTask} style={styles.saveButton} /> */}
             <View style={styles.buttonWrapper}>
               <Button title="Save" onPress={handleSaveTask} />
             </View>
-            {/* <Button title="Cancel" onPress={handleCloseModal} style={styles.cancelButton} /> */}
             <View style={[styles.buttonWrapper, styles.cancelButtonWrapper]}>
               <Button title="Cancel" onPress={handleCloseModal} />
             </View>
@@ -328,6 +307,7 @@ const renderProjectCard = (navigation, project) => {
     </TouchableOpacity>
   );
 };
+
 const ProjectDetailsScreen = ({ route }) => {
   const { project, navigation } = route.params;
 
@@ -345,13 +325,13 @@ const ProjectDetailsScreen = ({ route }) => {
 
 const AllScreen = () => {
   const navigation = useNavigation();
-  const [projects, setProjects] = useState([]);  // State to store fetched projects
+  const [projects, setProjects] = useState([]);
   const [error, setError] = useState(null);
 
   const fetchProjects = async () => {
     try {
       const response = await axios.get('http://localhost:3001/auth/projects');
-      setProjects(response.data);  // Set projects in the state
+      setProjects(response.data);
     } catch (error) {
       console.error('Error fetching projects:', error);
       setError('Error fetching projects');
@@ -379,10 +359,9 @@ const AllScreen = () => {
 
 const OngoingScreen = () => {
   const navigation = useNavigation();
-  const [projects, setProjects] = useState([]); // Define projects state here
+  const [projects, setProjects] = useState([]);
 
   useEffect(() => {
-    // Fetch projects data
     const fetchProjects = async () => {
       try {
         const response = await axios.get('http://localhost:3001/auth/projects');
@@ -395,7 +374,6 @@ const OngoingScreen = () => {
     fetchProjects();
   }, []);
 
-  // Filter for ongoing projects
   const ongoingProjects = projects.filter((project) => project.Percentage_Complete < 100);
 
   return (
@@ -412,13 +390,11 @@ const OngoingScreen = () => {
   );
 };
 
-
 const CompletedScreen = () => {
   const navigation = useNavigation();
-  const [projects, setProjects] = useState([]); // Define projects state here
+  const [projects, setProjects] = useState([]);
 
   useEffect(() => {
-    // Fetch projects data
     const fetchProjects = async () => {
       try {
         const response = await axios.get('http://localhost:3001/auth/projects');
@@ -431,7 +407,6 @@ const CompletedScreen = () => {
     fetchProjects();
   }, []);
 
-  // Filter for completed projects
   const completedProjects = projects.filter((project) => project.Percentage_Complete === 100);
 
   return (
@@ -448,14 +423,6 @@ const CompletedScreen = () => {
   );
 };
 
-const PMPage = () => (
-  <Stack.Navigator initialRouteName="PMPage">
-    <Stack.Screen name="PMPage" component={PMTopTabNavigator} options={{ headerShown: false }} />
-    <Stack.Screen name="ProjectDetails" component={ProjectDetailsScreen} />
-    <Stack.Screen name="Tasks" component={TasksPage} />
-  </Stack.Navigator>
-);
-
 const PMTopTabNavigator = () => (
   <Tab.Navigator>
     <Tab.Screen name="All" component={AllScreen} />
@@ -465,202 +432,120 @@ const PMTopTabNavigator = () => (
 );
 
 const styles = StyleSheet.create({
-  phaseCardContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    margin: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
-    flex: 1,
-  },
-  phaseCard: {
-    padding: 16,
-  },
-  phaseTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  phaseText: {
-    fontSize: 16,
-    color: '#555',
-  },
-  taskCard: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 16,
-    margin: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  taskName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  phase: {
-    color: '#555',
-    marginBottom: 8,
-  },
-  completionStatus: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    color: '#2ecc71',
-  },
-  projectCard: {
-    backgroundColor: '#fff',
-    padding: 10,
-    margin: 5,
-    borderRadius: 5,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  cardText: {
-    fontSize: 16,
-    font: "Quicksand",
-    marginBottom: 6,
-    color: '#555',
-  },
+  // ... your existing styles
+
   mytext: {
     fontWeight: 'bold',
-    fontfamily: 'Roboto',
-    marginLeft: '10px',
+    fontSize: 20,
+    margin: 10,
   },
+
+  // Add the new styles
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    padding: 10,
   },
   addButton: {
     backgroundColor: '#3498db',
     padding: 10,
     borderRadius: 5,
   },
-  updateButton: {
-    backgroundColor: '#2ecc71', // Green background color
-    padding: 12,
-    borderRadius: 8,
-    marginTop: 15,
-    marginBottom: 20,
-  },
   addButtonText: {
-    color: '#ffffff',
-    textAlign: 'center',
+    color: 'white',
     fontWeight: 'bold',
+  },
+  phaseCardContainer: {
+    padding: 10,
+  },
+  phaseCard: {
+    backgroundColor: '#ecf0f1',
+    padding: 20,
+    borderRadius: 10,
+  },
+  phaseTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  phaseText: {
+    marginTop: 10,
+    color: '#3498db',
+  },
+  taskCard: {
+    backgroundColor: '#ecf0f1',
+    padding: 20,
+    borderRadius: 10,
+    marginVertical: 10,
+  },
+  taskName: {
     fontSize: 16,
+    fontWeight: 'bold',
+  },
+  phase: {
+    marginVertical: 5,
+  },
+  completionStatus: {
+    marginVertical: 5,
+    color: '#3498db',
+  },
+  employees: {
+    marginVertical: 5,
   },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black background
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    overflow: 'hidden', // Ensure border-radius works as expected
-    width: '80%', // Adjust the width as needed
-    maxWidth: 400, // Maximum width for the modal
-    elevation: 5,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    padding: 15,
-    backgroundColor: '#3498db', // Header background color
-    color: '#fff', // Header text color
-    textAlign: 'center',
-  },
-  inputField: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between', // or 'space-around' based on your preference
-    marginHorizontal: 20, // Adjust the margin as needed
-    marginTop: 20,
-    width: "150%"
-  },
-  buttonWrapper: {
-    flex: 1,
-    marginHorizontal: 10, // Add margin to each button
-  },
-  saveButton: {
-    backgroundColor: '#3498db',
-    padding: 12,
-    borderRadius: 8,
-    marginRight: 10, // Add margin to the right of "Save" button
-  },
-
-  modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: 10,
-    marginBottom: 10,
-    width: "100%"
-  },
-  buttonWrapper: {
-    flex: 1,
-    marginHorizontal: 10, // Add margin to each button
-  },
-  cancelButtonWrapper: {
-    flex: 1, // Set the same flex value for both buttons
-  },
-  cancelButton: {
-    padding: 12,
-    borderRadius: 8,
-    marginLeft: 10, // Add margin to the left of "Cancel" button
-  },
-  buttonText: {
-    color: '#ffffff',
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-
   splitScreenContainer: {
     flexDirection: 'row',
-    flex: 1,
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    overflow: 'hidden',
   },
   leftSide: {
-    flex: 1,
     padding: 20,
-    backgroundColor: '#f0f0f0',
+    width: '60%',
   },
   rightSide: {
-    flex: 1,
     padding: 20,
-    backgroundColor: '#e0e0e0',
+    width: '40%',
+    backgroundColor: '#ecf0f1',
   },
-  sampleEmployee: {
-    fontSize: 16,
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
     marginBottom: 10,
   },
-  employees: {
-    fontSize: 16,
-    color: '#555',
-    marginBottom: 8,
+  inputField: {
+    borderWidth: 1,
+    borderColor: '#bdc3c7',
+    borderRadius: 5,
+    padding: 10,
+    marginVertical: 5,
   },
-  
+  updateButton: {
+    backgroundColor: '#3498db',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  sampleEmployee: {
+    marginBottom: 5,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    marginTop: 20,
+  },
+  buttonWrapper: {
+    flex: 1,
+    marginHorizontal: 10,
+  },
+  cancelButtonWrapper: {
+    backgroundColor: '#e74c3c',
+  },
 });
 
 export default PMPage;
