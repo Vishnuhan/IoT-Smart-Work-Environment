@@ -21,7 +21,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(session({ secret: 'your-secret-key', resave: true, saveUninitialized: true }));
 
 // Connect to MongoDB
-mongoose.connect('mongodb://127.0.0.1:27017/auth');
+// mongoose.connect('mongodb://127.0.0.1:27017/auth');
+
+
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const uri = "mongodb+srv://admin:admin@capstone.ewnejlz.mongodb.net/auth?retryWrites=true&w=majority&appName=Capstone";
+mongoose.connect(uri).then(() => console.log('Connected to MongoDB Atlas'))
+  .catch(err => console.error('Error connecting to MongoDB Atlas:', err));
+
 
 // API data routes
 app.get('/api/data', (req, res) => {
@@ -173,6 +180,38 @@ projectRoutes.post('/addtasktoproject', async (req, res) => {
   } catch (error) {
     console.error('Error adding task to project:', error);
     res.status(500).json({ message: 'Error adding task to project in the database' });
+  }
+});
+
+projectRoutes.post('/tasktoggle', async (req, res) => {
+  const { project, taskName, taskComplete } = req.body; // Destructure required fields from request body
+  console.log("in the tasktoggle server.js")
+  try {
+    // Find the project by name
+    const foundProject = await Project.findOne({ Name: project });
+
+    if (!foundProject) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+
+    // Locate the task to be updated
+    const taskToUpdate = foundProject.Tasks.find(task => task.taskName === taskName);
+
+    if (!taskToUpdate) {
+      return res.status(404).json({ message: 'Task not found in the project' });
+    }
+
+    // Update the taskComplete status of the found task
+    taskToUpdate.taskComplete = taskComplete;
+
+    // Save the updated project back to the database
+    const updatedProject = await foundProject.save();
+
+    res.status(200).json({ message: 'Task completion status updated successfully', updatedProject });
+
+  } catch (error) {
+    console.error('Error updating task completion status:', error);
+    res.status(500).json({ message: 'Error updating task completion status in the database' });
   }
 });
 
