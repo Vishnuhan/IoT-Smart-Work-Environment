@@ -43,32 +43,23 @@ const renderPhaseCard = (navigation, phase, projectName) => (
   </TouchableOpacity>
 );
 
-const PMPage = () => {
+const PMPage = ({ route }) => {
+  const { employeeId } = route.params;
+  console.log(employeeId);
   const navigation = useNavigation();
-
-  // useEffect(() => {
-  //   navigation.setOptions({
-  //     headerRight: () => (
-  //       <TouchableOpacity
-  //         style={{ marginRight: 20 }}
-  //         onPress={() => navigation.navigate('AddProjectPage')}
-  //       >
-  //         <Icon name="add-box" size={30} color="#3498db" />    
-  //       </TouchableOpacity>   
-  //     ),
-  //   });
-  // }, [navigation]);
 
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <View style={{ flexDirection: 'row', marginRight: 10 }}>
-          <TouchableOpacity
-            style={{ marginRight: 20 }}
-            onPress={() => navigation.navigate('AddProjectPage')}
-          >
-            <Icon name="add-box" size={30} color="#3498db" />
-          </TouchableOpacity>
+          {employeeId === 'admin' && (
+            <TouchableOpacity
+              style={{ marginRight: 20 }}
+              onPress={() => navigation.navigate('AddProjectPage')}
+            >
+              <Icon name="add-box" size={30} color="#3498db" />
+            </TouchableOpacity>
+          )}
           <TouchableOpacity
             onPress={() => navigation.navigate('NotificationBar')}
           >
@@ -77,19 +68,18 @@ const PMPage = () => {
         </View>
       ),
     });
-  }, [navigation]);
+  }, [navigation, employeeId]);
 
   return (
     <Stack.Navigator initialRouteName="PMTopTabNavigator" headerMode="none">
-      <Stack.Screen name="PMTopTabNavigator" component={PMTopTabNavigator} />
+      <Stack.Screen name="PMTopTabNavigator" component={PMTopTabNavigator} initialParams={{ employeeId: employeeId }} />
       <Stack.Screen name="ProjectDetails" component={ProjectDetailsScreen} />
-      <Stack.Screen name="Tasks" component={TasksPage} />
+      <Stack.Screen name="Tasks" component={TasksPage} initialParams={{ employeeId: employeeId }}/>
       <Stack.Screen name="AddProjectPage" component={AddProjectPage} />
-      <Stack.Screen name="NotificationBar" component={NotificationBar} />
+      <Stack.Screen name="NotificationBar" component={NotificationBar} initialParams={{ employeeId: employeeId }}/>
     </Stack.Navigator>
   );
 };
-
 
 
 const renderTaskCard = (task) => (
@@ -109,7 +99,7 @@ const renderTaskCard = (task) => (
   </View>
 );
 const TasksPage = ({ route }) => {
-  const { phase, projectName } = route.params;
+  const { phase, projectName, employeeId } = route.params;
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newTaskName, setNewTaskName] = useState('');
   const [newTaskPhase, setNewTaskPhase] = useState('');
@@ -243,9 +233,12 @@ const TasksPage = ({ route }) => {
       <View style={styles.header}>
         <Text style={styles.mytext}>Tasks for Phase: {phase.name}</Text>
         <Text style={styles.mytext}>Project: {projectName}</Text>
-        <TouchableOpacity onPress={handleAddTask} style={styles.addButton}>
-          <Text style={styles.addButtonText}>Add Task</Text>
-        </TouchableOpacity>
+          {employeeId === 'admin' && (
+          <TouchableOpacity onPress={handleAddTask} style={styles.addButton}>
+            <Text style={styles.addButtonText}>Add Task</Text>
+          </TouchableOpacity>
+)}
+
       </View>
       <FlatList
         data={projectTasks}
@@ -350,44 +343,11 @@ const renderProjectCard = (navigation, project) => {
   );
 };
 
-// const ProjectDetailsScreen = ({ route }) => {
-//   const { project, navigation } = route.params;
 
-//   return (
-//     <View>
-//       <Text style={styles.mytext}>Project Phases</Text>
-//       <FlatList
-//         data={PHASES}
-//         keyExtractor={(item) => item.name}
-//         renderItem={({ item }) => renderPhaseCard(navigation, item, project.Name)}
-//       />
-//     </View>
-//   );
-// };
-
-// const chartColors = {
-//   backgroundColor: [
-//     'rgba(255, 99, 132, 0.2)',
-//     'rgba(255, 159, 64, 0.2)',
-//     'rgba(255, 205, 86, 0.2)',
-//     'rgba(75, 192, 192, 0.2)',
-//   ],
-//   borderColor: [
-//     'rgb(255, 99, 132)',
-//     'rgb(255, 159, 64)',
-//     'rgb(255, 205, 86)',
-//     'rgb(75, 192, 192)',
-//   ],
-// };
 
 const ProjectDetailsScreen = ({ route }) => {
   const { project, navigation } = route.params;
-  // const chartConfig = {
-  //   backgroundGradientFrom: "#fff",
-  //   backgroundGradientTo: "#fff",
-  //   color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-  //   labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-  // };
+  
 
   const chartConfig = {
     backgroundGradientFrom: "#fff",

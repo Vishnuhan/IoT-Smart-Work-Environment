@@ -34,15 +34,14 @@ const LoginScreen = ({ navigation }) => {
       console.log(response);
       console.log('Login successful:', response.data);
       setLoggedIn(true);
+      console.log(employeeId);
+      navigation.navigate('BottomTabNav', { employeeId: employeeId });
+
     } catch (error) {
       console.error('Error logging in:', error);
       setError('Incorrect user information. Please try again.');
     }
   };
-
-  if (loggedIn) {
-    return <BottomTabNavigator isAdmin={isAdmin} />;
-  }
 
   return (
     <View style={styles.container}>
