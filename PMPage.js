@@ -20,6 +20,7 @@ import { Dimensions } from 'react-native';
 import AddProjectPage from './AddProjectPage'; // Adjust the import path as needed
 import TaskToggle from './TaskToggle'; // Import the TaskToggle component
 
+
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
 
@@ -266,7 +267,7 @@ const TasksPage = ({ route }) => {
                 onChangeText={(text) => setNewTaskNumEmployees(parseInt(text) || 0)}
               />
               <TouchableOpacity onPress={handleUpdateSampleEmployees} style={styles.updateButton}>
-                <Text style={styles.addButtonText}>Update Sample Employees</Text>
+                <Text style={styles.addButtonText}>Generate AI suggestions</Text>
               </TouchableOpacity>
               <TextInput
                 style={styles.inputField}
@@ -352,21 +353,39 @@ const renderProjectCard = (navigation, project) => {
 
 const ProjectDetailsScreen = ({ route }) => {
   const { project, navigation } = route.params;
+  // const chartConfig = {
+  //   backgroundGradientFrom: "#fff",
+  //   backgroundGradientTo: "#fff",
+  //   color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+  //   labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+  // };
+
   const chartConfig = {
     backgroundGradientFrom: "#fff",
     backgroundGradientTo: "#fff",
-    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    barPercentage: 0.5, // Adjust the width of the bars, default is 0.4
+    //barRadius: 5, // Adjust the corner radius of the bars
+    barStyle: {
+      borderRadius: 10, // Additional styling for the bars, if needed
+    },
+    formatYLabel: label => label + '%',
   };
+  
 
   const screenWidth = Dimensions.get("window").width;
+  // const screenWidth = Dimensions.get("window").width;
+  const chartWidth = screenWidth - 5; 
 
   const data = {
-    labels: PHASES.map(phase => phase.name),
+    labels: PHASES.map(phase => phase.name), //yAxisLabel: 'Percentage Complete',
     datasets: [{
       data: PHASES.map(phase => phase.percentage)
     }]
   };
+
+  
 
   return (
     <ScrollView>
@@ -378,13 +397,15 @@ const ProjectDetailsScreen = ({ route }) => {
           renderItem={({ item }) => renderPhaseCard(navigation, item, project.Name)}
           scrollEnabled={false} // Disables scrolling for the FlatList, since it's inside a ScrollView
         />
+        <Text style={styles.mytext}>Progress Chart</Text>
         <BarChart
           data={data}
-          width={screenWidth}
+          width={chartWidth}
           height={220}
-          yAxisLabel="%"
+          yAxisLabel=""
           chartConfig={chartConfig}
-          verticalLabelRotation={30}
+          verticalLabelRotation={0}
+          style={styles.chart}
         />
       </View>
     </ScrollView>
@@ -552,8 +573,11 @@ const styles = StyleSheet.create({
   projectCard: {
     backgroundColor: '#fff',
     padding: 10,
-    margin: 5,
+    margin: 3,
+    marginLeft: 2,
     borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#000', // Black border
   },
   cardTitle: {
     fontSize: 18,
@@ -590,7 +614,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#2ecc71', // Green background color
     padding: 12,
     borderRadius: 8,
-    marginTop: 15,
+    marginTop: 10,
     marginBottom: 20,
   },
   addButtonText: {
@@ -808,6 +832,13 @@ const styles = StyleSheet.create({
   },
   cancelButtonWrapper: {
     backgroundColor: '#e74c3c',
+  },
+  chart: {
+    marginTop: 10, // Add margin top
+    marginBottom: 10,
+    borderRadius: 20, // Add border radius
+    borderWidth: 2, // Add border width if needed
+    borderColor: '#000', // Add border color if needed
   },
 });
 
