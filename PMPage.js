@@ -15,6 +15,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import axios from 'axios';
+import { BarChart } from 'react-native-chart-kit';
+import { Dimensions } from 'react-native';
 import AddProjectPage from './AddProjectPage'; // Adjust the import path as needed
 import TaskToggle from './TaskToggle'; // Import the TaskToggle component
 
@@ -32,15 +34,24 @@ const renderPhaseCard = (navigation, phase, projectName) => (
   <TouchableOpacity
     onPress={() => navigation.navigate('Tasks', { phase, projectName })}
   >
-    <View style={styles.phaseCardContainer}>
-      <View style={styles.phaseCard}>
-        <Text style={styles.phaseTitle}>{phase.name}</Text>
-        <Text style={styles.phaseText}>{phase.percentage}% Completed</Text>
-      </View>
+    <View style={styles.projectCard}>
+        <Text style={styles.cardTitle}>{phase.name}</Text>
+        <Text style={styles.cardText}>{phase.percentage}% Completed</Text>
     </View>
   </TouchableOpacity>
 );
+ 
+const PhasePage = ({ route }) => {
+  const { projectName, navigation } = route.params;
 
+  return (
+    <FlatList
+      data={PHASES}
+      keyExtractor={(item) => item.name}
+      renderItem={({ item }) => renderPhaseCard(navigation, item, projectName)}
+    />
+  );
+};
 
 const PMPage = () => {
   const navigation = useNavigation();
@@ -321,18 +332,74 @@ const renderProjectCard = (navigation, project) => {
   );
 };
 
+// const ProjectDetailsScreen = ({ route }) => {
+//   const { project, navigation } = route.params;
+
+//   return (
+//     <View>
+//       <Text style={styles.mytext}>Project Phases</Text>
+//       <FlatList
+//         data={PHASES}
+//         keyExtractor={(item) => item.name}
+//         renderItem={({ item }) => renderPhaseCard(navigation, item, project.Name)}
+//       />
+//     </View>
+//   );
+// };
+
+// const chartColors = {
+//   backgroundColor: [
+//     'rgba(255, 99, 132, 0.2)',
+//     'rgba(255, 159, 64, 0.2)',
+//     'rgba(255, 205, 86, 0.2)',
+//     'rgba(75, 192, 192, 0.2)',
+//   ],
+//   borderColor: [
+//     'rgb(255, 99, 132)',
+//     'rgb(255, 159, 64)',
+//     'rgb(255, 205, 86)',
+//     'rgb(75, 192, 192)',
+//   ],
+// };
+
 const ProjectDetailsScreen = ({ route }) => {
   const { project, navigation } = route.params;
+  const chartConfig = {
+    backgroundGradientFrom: "#fff",
+    backgroundGradientTo: "#fff",
+    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+  };
+
+  const screenWidth = Dimensions.get("window").width;
+
+  const data = {
+    labels: PHASES.map(phase => phase.name),
+    datasets: [{
+      data: PHASES.map(phase => phase.percentage)
+    }]
+  };
 
   return (
-    <View>
-      <Text style={styles.mytext}>Project Phases</Text>
-      <FlatList
-        data={PHASES}
-        keyExtractor={(item) => item.name}
-        renderItem={({ item }) => renderPhaseCard(navigation, item, project.Name)}
-      />
-    </View>
+    <ScrollView>
+      <View>
+        <Text style={styles.mytext}>Project Phases</Text>
+        <FlatList
+          data={PHASES}
+          keyExtractor={(item) => item.name}
+          renderItem={({ item }) => renderPhaseCard(navigation, item, project.Name)}
+          scrollEnabled={false} // Disables scrolling for the FlatList, since it's inside a ScrollView
+        />
+        <BarChart
+          data={data}
+          width={screenWidth}
+          height={220}
+          yAxisLabel="%"
+          chartConfig={chartConfig}
+          verticalLabelRotation={30}
+        />
+      </View>
+    </ScrollView>
   );
 };
 

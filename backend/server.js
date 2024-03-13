@@ -21,7 +21,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(session({ secret: 'your-secret-key', resave: true, saveUninitialized: true }));
 
 // Connect to MongoDB
-mongoose.connect('mongodb://127.0.0.1:27017/auth');
+// mongoose.connect('mongodb://127.0.0.1:27017/auth');
+
+
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const uri = "mongodb+srv://admin:admin@capstone.ewnejlz.mongodb.net/auth?retryWrites=true&w=majority&appName=Capstone";
+mongoose.connect(uri).then(() => console.log('Connected to MongoDB Atlas'))
+  .catch(err => console.error('Error connecting to MongoDB Atlas:', err));
+
 
 // API data routes
 app.get('/api/data', (req, res) => {
@@ -178,7 +185,7 @@ projectRoutes.post('/addtasktoproject', async (req, res) => {
 
 projectRoutes.post('/tasktoggle', async (req, res) => {
   const { project, taskName, taskComplete } = req.body; // Destructure required fields from request body
-
+  console.log("in the tasktoggle server.js")
   try {
     // Find the project by name
     const foundProject = await Project.findOne({ Name: project });
