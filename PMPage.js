@@ -19,7 +19,8 @@ import { BarChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
 import AddProjectPage from './AddProjectPage'; // Adjust the import path as needed
 import TaskToggle from './TaskToggle'; // Import the TaskToggle component
-
+import NotificationBar from './NotificationBar';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
@@ -45,15 +46,35 @@ const renderPhaseCard = (navigation, phase, projectName) => (
 const PMPage = () => {
   const navigation = useNavigation();
 
+  // useEffect(() => {
+  //   navigation.setOptions({
+  //     headerRight: () => (
+  //       <TouchableOpacity
+  //         style={{ marginRight: 20 }}
+  //         onPress={() => navigation.navigate('AddProjectPage')}
+  //       >
+  //         <Icon name="add-box" size={30} color="#3498db" />    
+  //       </TouchableOpacity>   
+  //     ),
+  //   });
+  // }, [navigation]);
+
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity
-          style={{ marginRight: 20 }}
-          onPress={() => navigation.navigate('AddProjectPage')}
-        >
-          <Icon name="add-box" size={30} color="#3498db" />
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', marginRight: 10 }}>
+          <TouchableOpacity
+            style={{ marginRight: 20 }}
+            onPress={() => navigation.navigate('AddProjectPage')}
+          >
+            <Icon name="add-box" size={30} color="#3498db" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('NotificationBar')}
+          >
+            <Icon name="notifications" size={30} color="#3498db" />
+          </TouchableOpacity>
+        </View>
       ),
     });
   }, [navigation]);
@@ -64,9 +85,11 @@ const PMPage = () => {
       <Stack.Screen name="ProjectDetails" component={ProjectDetailsScreen} />
       <Stack.Screen name="Tasks" component={TasksPage} />
       <Stack.Screen name="AddProjectPage" component={AddProjectPage} />
+      <Stack.Screen name="NotificationBar" component={NotificationBar} />
     </Stack.Navigator>
   );
 };
+
 
 
 const renderTaskCard = (task) => (
@@ -165,7 +188,6 @@ const TasksPage = ({ route }) => {
       taskPhase: newTaskPhase,
       taskSize: newTaskSize, 
       employees: employeeInputs.filter(input => input.trim() !== ''), // Filter out any empty strings
-      dueDate: newTaskDueDate,
       taskSize: newTaskSize,
       employees: employeeInputs.filter((input) => input.trim() !== ''),
     };
@@ -279,7 +301,7 @@ const TasksPage = ({ route }) => {
               {renderEmployeeInputs()}
             </View>
             <View style={styles.rightSide}>
-              <Text style={styles.modalTitle}>AI Suggestion</Text>
+              <Text style={styles.modalTitle}> AI Suggestion</Text>
               <FlatList
                 data={newTaskEmployees}
                 keyExtractor={(item, index) => index.toString()}
@@ -293,7 +315,7 @@ const TasksPage = ({ route }) => {
             <View style={styles.buttonWrapper}>
               <Button title="Save" onPress={handleSaveTask} />
             </View>
-            <View style={[styles.buttonWrapper, styles.cancelButtonWrapper]}>
+            <View style={[styles.buttonWrapper]}>
               <Button title="Cancel" onPress={handleCloseModal} />
             </View>
           </View>
@@ -303,6 +325,8 @@ const TasksPage = ({ route }) => {
   );
 };
 
+
+
 const renderProjectCard = (navigation, project) => {
   const teamText = project.Team ? `Team: ${project.Team.join(', ')}` : 'Team: N/A';
 
@@ -311,11 +335,16 @@ const renderProjectCard = (navigation, project) => {
       onPress={() => navigation.navigate('ProjectDetails', { project, navigation })}
     >
       <View style={styles.projectCard}>
-        <Text style={styles.cardTitle}>Name: {project.Name}</Text>
-        <Text style={styles.cardText}>Percentage Complete: {project.Percentage_Complete}%</Text>
-        <Text style={styles.cardText}>{teamText}</Text>
-        <Text style={styles.cardText}>Due Date: {project.Due_Date}</Text>
-        <Text style={styles.cardText}>Tasks: {project.Tasks ? project.Tasks.join(', ') : 'N/A'}</Text>
+        <View style={styles.leftContent}>
+          <Text style={styles.cardTitle}>Name: {project.Name}</Text>
+          <Text style={styles.cardText}>Due Date: {project.Due_Date}</Text>
+          {/* <Text style={styles.cardText}>Tasks: {project.Tasks ? project.Tasks.join(', ') : 'N/A'}</Text> */}
+          <Text style={styles.cardText}>{teamText}</Text>
+        </View>
+        <View style={styles.rightContent}>
+          <Text style={styles.cardText}>Percentage Complete: {project.Percentage_Complete}%</Text>
+          <CircularProgress variant="determinate" value={project.Percentage_Complete} />
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -546,15 +575,13 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   taskCard: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 16,
-    margin: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
+      backgroundColor: '#fff',
+      padding: 10,
+      margin: 3,
+      marginLeft: 2,
+      borderRadius: 5,
+      borderWidth: 1,
+      borderColor: '#000', // Black border
   },
   taskName: {
     fontSize: 18,
@@ -578,6 +605,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     borderColor: '#000', // Black border
+    
+    flexDirection: 'row',
+    justifyContent: 'space-between',   
+    marginBottom: 10,
   },
   cardTitle: {
     fontSize: 18,
@@ -589,11 +620,6 @@ const styles = StyleSheet.create({
     font: "Quicksand",
     marginBottom: 6,
     color: '#555',
-  },
-  mytext: {
-    fontWeight: 'bold',
-    fontfamily: 'Roboto',
-    marginLeft: '10px',
   },
   header: {
     flexDirection: 'row',
@@ -638,10 +664,10 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 12,
     fontWeight: 'bold',
     marginBottom: 10,
-    padding: 15,
+    padding: 4,
     backgroundColor: '#3498db', // Header background color
     color: '#fff', // Header text color
     textAlign: 'center',
@@ -661,10 +687,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: "150%"
   },
-  buttonWrapper: {
-    flex: 1,
-    marginHorizontal: 10, // Add margin to each button
-  },
+ 
   saveButton: {
     backgroundColor: '#3498db',
     padding: 12,
@@ -677,14 +700,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     marginTop: 10,
     marginBottom: 10,
-    width: "100%"
+    width: "150%" 
   },
   buttonWrapper: {
-    flex: 1,
+    flex: 2,
     marginHorizontal: 10, // Add margin to each button
-  },
-  cancelButtonWrapper: {
-    flex: 1, // Set the same flex value for both buttons
+    width: "100px",
+    backgroundColor: 'red'
   },
   cancelButton: {
     padding: 12,
@@ -723,7 +745,7 @@ const styles = StyleSheet.create({
 
   mytext: {
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 15,
     margin: 10,
   },
 
@@ -759,12 +781,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     color: '#3498db',
   },
-  taskCard: {
-    backgroundColor: '#ecf0f1',
-    padding: 20,
-    borderRadius: 10,
-    marginVertical: 10,
-  },
+
   taskName: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -801,11 +818,6 @@ const styles = StyleSheet.create({
     width: '40%',
     backgroundColor: '#ecf0f1',
   },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
   inputField: {
     borderWidth: 1,
     borderColor: '#bdc3c7',
@@ -826,19 +838,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: 20,
   },
-  buttonWrapper: {
-    flex: 1,
-    marginHorizontal: 10,
-  },
-  cancelButtonWrapper: {
-    backgroundColor: '#e74c3c',
-  },
   chart: {
     marginTop: 10, // Add margin top
     marginBottom: 10,
     borderRadius: 20, // Add border radius
     borderWidth: 2, // Add border width if needed
     borderColor: '#000', // Add border color if needed
+  },
+  
+  leftContent: {
+    flex: 1,
+  },
+  rightContent: {
+    marginLeft: 10,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 5,
+    marginBottom: 5,
+  },
+  cardTitle: {
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  cardText: {
+    marginBottom: 10
   },
 });
 
