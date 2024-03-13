@@ -176,6 +176,38 @@ projectRoutes.post('/addtasktoproject', async (req, res) => {
   }
 });
 
+projectRoutes.post('/tasktoggle', async (req, res) => {
+  const { project, taskName, taskComplete } = req.body; // Destructure required fields from request body
+
+  try {
+    // Find the project by name
+    const foundProject = await Project.findOne({ Name: project });
+
+    if (!foundProject) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+
+    // Locate the task to be updated
+    const taskToUpdate = foundProject.Tasks.find(task => task.taskName === taskName);
+
+    if (!taskToUpdate) {
+      return res.status(404).json({ message: 'Task not found in the project' });
+    }
+
+    // Update the taskComplete status of the found task
+    taskToUpdate.taskComplete = taskComplete;
+
+    // Save the updated project back to the database
+    const updatedProject = await foundProject.save();
+
+    res.status(200).json({ message: 'Task completion status updated successfully', updatedProject });
+
+  } catch (error) {
+    console.error('Error updating task completion status:', error);
+    res.status(500).json({ message: 'Error updating task completion status in the database' });
+  }
+});
+
 
 const roomRoutes = express.Router();
 

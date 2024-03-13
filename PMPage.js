@@ -16,7 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import axios from 'axios';
 import AddProjectPage from './AddProjectPage'; // Adjust the import path as needed
-
+import TaskToggle from './TaskToggle'; // Import the TaskToggle component
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
@@ -41,17 +41,6 @@ const renderPhaseCard = (navigation, phase, projectName) => (
   </TouchableOpacity>
 );
 
-const PhasePage = ({ route }) => {
-  const { projectName, navigation } = route.params;
-
-  return (
-    <FlatList
-      data={PHASES}
-      keyExtractor={(item) => item.name}
-      renderItem={({ item }) => renderPhaseCard(navigation, item, projectName)}
-    />
-  );
-};
 
 const PMPage = () => {
   const navigation = useNavigation();
@@ -84,6 +73,10 @@ const renderTaskCard = (task) => (
   <View style={styles.taskCard}>
     <Text style={styles.taskName}>Task Name: {task.taskName}</Text>
     <Text style={styles.phase}>Phase: {task.taskPhase}</Text>
+    
+    {/* Include the TaskToggle component here */}
+    <TaskToggle project={task.project} taskName={task.taskName} />
+
     <Text style={styles.completionStatus}>
       Completion Status: {task.taskComplete ? 'Complete' : 'Incomplete'}
     </Text>
@@ -92,7 +85,6 @@ const renderTaskCard = (task) => (
     </Text>
   </View>
 );
-
 const TasksPage = ({ route }) => {
   const { phase, projectName } = route.params;
   const [isModalVisible, setIsModalVisible] = useState(false);
