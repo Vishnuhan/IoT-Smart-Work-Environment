@@ -21,6 +21,8 @@ import AddProjectPage from './AddProjectPage'; // Adjust the import path as need
 import TaskToggle from './TaskToggle'; // Import the TaskToggle component
 import NotificationBar from './NotificationBar';
 import CircularProgress from '@mui/material/CircularProgress';
+// import Icon from 'react-native-vector-icons/FontAwesome';
+
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
@@ -335,7 +337,7 @@ const renderProjectCard = (navigation, project) => {
           <Text style={styles.cardText}>{teamText}</Text>
         </View>
         <View style={styles.rightContent}>
-          <Text style={styles.cardText}>Percentage Complete: {project.Percentage_Complete}%</Text>
+          <Text style={styles.percentText}>Percentage Complete: {project.Percentage_Complete}%</Text>
           <CircularProgress variant="determinate" value={project.Percentage_Complete} />
         </View>
       </View>
@@ -424,6 +426,10 @@ const AllScreen = () => {
     <ScrollView>
       <View>
         <Text style={styles.mytext}>All Projects</Text>
+        <TouchableOpacity onPress={fetchProjects} style={{ alignSelf: 'flex-end', marginTop: -10 }}>
+          <Icon name="refresh" size={20} color="#3498db" style={{ marginRight: 20, marginTop: -20, marginBottom: 5 }} />
+        </TouchableOpacity>
+
         <FlatList
           style={{ flex: 1 }}
           data={projects}
@@ -824,6 +830,11 @@ const styles = StyleSheet.create({
   cardText: {
     marginBottom: 10
   },
+  percentText:{
+    fontWeight: 'bold',
+    marginBottom: 10,
+  }
+
 });
 
 export default PMPage;
