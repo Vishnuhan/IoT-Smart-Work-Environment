@@ -9,9 +9,9 @@ import AccountPage from './AccountPage';
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = ({ route }) => {
-  const { employeeId } = route.params;
+  const { employeeId, employeeName, employeePic} = route.params;
 
-  console.log("Employee ID:", employeeId);
+  console.log("Employee pic:", employeePic);
 
   return (
     <Tab.Navigator
@@ -30,7 +30,7 @@ const BottomTabNavigator = ({ route }) => {
       <Tab.Screen
         name="PM Tracking"
         component={PMPage}
-        initialParams={{ employeeId: employeeId }} // Pass employeeId as initial param to PMPage
+        initialParams={{ employeeId: employeeId, employeeName: employeeName }} // Pass employeeId as initial param to PMPage
         options={{
           tabBarIcon: ({ color, size }) => <Icon name="track-changes" size={size} color={color} />,
         }}
@@ -45,6 +45,7 @@ const BottomTabNavigator = ({ route }) => {
       <Tab.Screen
         name="Account"
         component={AccountPage}
+        initialParams={{ employeeName: employeeName, employeePic: employeePic }} // Pass employeeId as initial param to PMPage
         options={{
           tabBarIcon: ({ color, size }) => <Icon name="account-circle" size={size} color={color} />,
         }}

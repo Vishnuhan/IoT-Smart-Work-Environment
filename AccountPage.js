@@ -1,14 +1,14 @@
-// AccountPage.js
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Image, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Avatar } from 'react-native-paper';
 
-const AccountPage = () => {
+const AccountPage = ({route}) => {
   const navigation = useNavigation();
+  const {employeeName, employeePic} = route.params;
+  console.log(employeePic)
 
   const handleLogout = () => {
-    // Assuming 'Home' is the name of the screen you want to navigate to
     navigation.navigate('Home');
   };
 
@@ -19,16 +19,16 @@ const AccountPage = () => {
       <View style={styles.contentContainer}>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>User Information</Text>
-          <Text>Email: user@example.com</Text>
+          <Text>Email: {employeeName}@deskSynergy.com</Text>
           {/* Add more user-related information here */}
         </View>
 
         <View style={styles.avatarContainer}>
           <Avatar.Image
-            size={90} // Adjust the size as needed
-            // source={require('../../images/Ishan-photo1.jpg')}
+            size={90}
+            // source={{ uri: 'https://avataaars.io/?avatarStyle=Transparent&topType=LongHairStraight&accessoriesType=Blank&hairColor=BrownDark&facialHairType=Blank&clotheType=BlazerShirt&eyeType=Default&eyebrowType=Default&mouthType=Default&skinColor=Light' }}
+            source={{ uri: employeePic }}
 
-            source={{ uri: 'https://example.com/path-to-person-image.jpg' }} // Use a placeholder image
           />
         </View>
       </View>
@@ -37,9 +37,6 @@ const AccountPage = () => {
         <Text style={styles.sectionTitle}>Account Actions</Text>
         <TouchableOpacity style={styles.button}>
           <Text style={styles.buttonText}>Change Password</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Update Email</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.buttonText}>Logout</Text>
@@ -56,9 +53,9 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   contentContainer: {
-    flexDirection: 'row', // Align sections in a row
-    justifyContent: 'space-between', // Put space between the sections
-    marginBottom: 16, // Adjust the margin as needed
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
   },
   header: {
     fontSize: 24,
@@ -66,8 +63,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   section: {
-    flex: 1, // Expand to fill the available space
-    marginRight: 16, // Adjust margin as needed
+    flex: 1,
+    marginRight: 16,
   },
   sectionTitle: {
     fontSize: 18,
@@ -76,7 +73,7 @@ const styles = StyleSheet.create({
   },
   avatarContainer: {
     marginRight: 20,
-    marginTop: -10, // Adjust the negative margin as needed
+    marginTop: -10,
   },
   button: {
     backgroundColor: '#3498db',

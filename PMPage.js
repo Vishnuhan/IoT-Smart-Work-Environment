@@ -46,8 +46,8 @@ const renderPhaseCard = (navigation, phase, projectName) => (
 );
 
 const PMPage = ({ route }) => {
-  const { employeeId } = route.params;
-  console.log(employeeId);
+  const { employeeId, employeeName} = route.params;
+  console.log(employeeId, employeeName);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -74,7 +74,7 @@ const PMPage = ({ route }) => {
 
   return (
     <Stack.Navigator initialRouteName="PMTopTabNavigator" headerMode="none">
-      <Stack.Screen name="PMTopTabNavigator" component={PMTopTabNavigator} initialParams={{ employeeId: employeeId }} />
+      <Stack.Screen name="PMTopTabNavigator" component={PMTopTabNavigator} initialParams={{ employeeId: employeeId, employeeName: employeeName }} />
       <Stack.Screen name="ProjectDetails" component={ProjectDetailsScreen} />
       <Stack.Screen name="Tasks" component={TasksPage} initialParams={{ employeeId: employeeId }}/>
       <Stack.Screen name="AddProjectPage" component={AddProjectPage} />
@@ -403,14 +403,15 @@ const ProjectDetailsScreen = ({ route }) => {
   );
 };
 
-const AllScreen = () => {
+const AllScreen = ({route}) => {
   const navigation = useNavigation();
   const [projects, setProjects] = useState([]);
   const [error, setError] = useState(null);
+  const {employeeName} = route.params;
 
   const fetchProjects = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/auth/projects');
+      const response = await axios.get(`http://localhost:3001/auth/projects?employeeName=${employeeName}`);
       setProjects(response.data);
     } catch (error) {
       console.error('Error fetching projects:', error);
@@ -441,15 +442,16 @@ const AllScreen = () => {
   );
 };
 
-const OngoingScreen = () => {
+const OngoingScreen = ({route}) => {
   const navigation = useNavigation();
   const [projects, setProjects] = useState([]);
+  const {employeeName} = route.params;
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/auth/projects');
-        setProjects(response.data);
+        const response = await axios.get(`http://localhost:3001/auth/projects?employeeName=${employeeName}`);
+      setProjects(response.data);
       } catch (error) {
         console.error('Error fetching projects:', error);
       }
@@ -474,15 +476,16 @@ const OngoingScreen = () => {
   );
 };
 
-const CompletedScreen = () => {
+const CompletedScreen = ({route}) => {
   const navigation = useNavigation();
   const [projects, setProjects] = useState([]);
+  const {employeeName} = route.params;
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/auth/projects');
-        setProjects(response.data);
+      const response = await axios.get(`http://localhost:3001/auth/projects?employeeName=${employeeName}`);
+      setProjects(response.data);
       } catch (error) {
         console.error('Error fetching projects:', error);
       }
@@ -507,14 +510,18 @@ const CompletedScreen = () => {
   );
 };
 
-const PMTopTabNavigator = () => (
-  <Tab.Navigator>
-    <Tab.Screen name="All" component={AllScreen} />
-    <Tab.Screen name="Ongoing" component={OngoingScreen} />
-    <Tab.Screen name="Completed" component={CompletedScreen} />
-  </Tab.Navigator>
-);
+const PMTopTabNavigator = ({ route }) => {
+  // Destructuring employeeId and employeeName from route.params
+  const { employeeId, employeeName } = route.params;
 
+  return (
+    <Tab.Navigator>
+      <Tab.Screen name="All" component={AllScreen} initialParams={{ employeeName: employeeName }} />
+      <Tab.Screen name="Ongoing" component={OngoingScreen} initialParams={{ employeeName: employeeName }} />
+      <Tab.Screen name="Completed" component={CompletedScreen} initialParams={{ employeeName: employeeName }} />
+    </Tab.Navigator>
+  );
+};
 const styles = StyleSheet.create({
   // ... your existing styles
   phaseCardContainer: {

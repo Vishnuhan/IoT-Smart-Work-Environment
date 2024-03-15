@@ -70,8 +70,16 @@ const BookRoomPage = () => {
       if (booked) {
         console.log('Room is available for booking at this time');
         setModalVisible(false);
-        await updateBookingStatus(room, time);
+        await updateBookingStatus(room, time, false);
         Alert.alert('Booking Successful', `You have successfully booked ${room} at ${time}`);
+
+        // Set a timeout to revert booking status after 1 minute
+        setTimeout(async () => {
+        await updateBookingStatus(room, time, true); // Revert to available
+        console.log(`Booking status reverted for ${room} at ${time}`);
+      }, 60000); // 60000 milliseconds = 1 minute
+
+
       } else {
         console.log('Not available for this time');
         setModalVisible(false);
@@ -88,14 +96,15 @@ const BookRoomPage = () => {
     }
   };
 
-  const updateBookingStatus = async (room, time) => {
-    try {
-      await axios.put(`http://localhost:3001/auth/rooms/${room}/times/${time}`);
-    } catch (error) {
-      console.error(`Error updating booking status for ${room} at ${time}:`, error);
-    }
-  };
-
+ // Update to include a 'booked' parameter to control booking status
+const updateBookingStatus = async (room, time, booked) => {
+  try {
+    // Update the request to reflect the desired status based on the 'booked' parameter
+    await axios.put(`http://localhost:3001/auth/rooms/${room}/times/${time}`, { booked });
+  } catch (error) {
+    console.error(`Error updating booking status for ${room} at ${time}:`, error);
+  }
+};
   return (
     <ScrollView
       style={{ flex: 1 }}
@@ -139,16 +148,6 @@ const BookRoomPage = () => {
 <text x="390" y="490" font-family="Verdana" font-size="15" fill="black">Meeting Room 7</text>
         </svg>
 
-        {/* Selected Room */}
-        {/* {selectedRoom && (
-          <View style={styles.selectedRoomContainer}>
-            <Text style={styles.selectedRoomText}>Selected Room: {selectedRoom}</Text>
-            <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
-              <Text>Confirm</Text>
-            </TouchableOpacity>
-          </View>
-        )} */}
-
         {/* Modal for Booking */}
         <Modal
           animationType="slide"
@@ -167,6 +166,7 @@ const BookRoomPage = () => {
                 onValueChange={(itemValue) => setSelectedTime(itemValue)}
                 style={styles.pickerStyle}
               >
+                 <Picker.Item label="9:00 AM - 10:00 AM" value="9:00 AM - 10:00 AM" />
                 <Picker.Item label="10:00 AM - 11:00 AM" value="10:00 AM - 11:00 AM" />
                 <Picker.Item label="11:00 AM - 12:00 PM" value="11:00 AM - 12:00 PM" />
                 <Picker.Item label="12:00 PM - 1:00 PM" value="12:00 PM - 1:00 PM" />

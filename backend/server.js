@@ -108,23 +108,6 @@ authRoutes.post('/register', async (req, res) => {
 // Project routes
 const projectRoutes = express.Router();
 
-// projectRoutes.post('/projects', async (req, res) => {
-//   const projectData = req.body;
-//   console.log('We are in the projects API');
-//   try {
-//     // Save project data to MongoDB
-//     // Assuming you have a Project model similar to User model
-//     const newProject = new Project(projectData);
-//     await newProject.save();
-
-//     res.send('Project added successfully.');
-//     console.log('Project Added Successfully');
-//   } catch (err) {
-//     console.error(err);
-//     return res.status(500).send('An error occurred while adding the project.');
-//   }
-// });
-
 projectRoutes.post('/projects', async (req, res) => {
   const { Name, Percentage_Complete, Due_Date, Team } = req.body;
   
@@ -262,15 +245,16 @@ if (room.Times && room.Times.length > 0) {
 roomRoutes.put('/rooms/:roomName/times/:times', async (req, res) => {
   try {
     const { roomName, times } = req.params;
+    const { booked } = req.body; // Get the booked status from the request body
 
-    // Update the room by setting the booked value to false for the specific time slot
+    // Update the room by setting the booked value based on the request
     await Room.findOneAndUpdate(
       { Name: roomName, 'Times.time': times },
-      { $set: { 'Times.$.booked': false } }
+      { $set: { 'Times.$.booked': booked } } // Use the booked status from the request
     );
 
     // Send a success response
-    res.json({ message: 'Booking updated successfully' });
+    res.json({ message: 'Booking status updated successfully' });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: 'An error occurred while updating room data.' });
@@ -278,12 +262,25 @@ roomRoutes.put('/rooms/:roomName/times/:times', async (req, res) => {
 });
 
 
-projectRoutes.get('/projects', async (req, res) => {
-  try {
-    // Fetch all projects from MongoDB
-    const projects = await Project.find();
-    res.json(projects);
 
+projectRoutes.get('/projects', async (req, res) => {
+  const { employeeName } = req.query; // Extracting employeeName from query parameters
+
+  try {
+    let projects;
+    if (employeeName === 'admin') {
+      projects = await Project.find(); // Admin gets all projects
+    } else {
+      // For other employees, filter projects where they are part of the team or a task
+      projects = await Project.find({
+        $or: [
+          { Team: employeeName }, // Included in the project team
+          { "Tasks.employees": employeeName } // Included in any task's employees
+        ]
+      });
+    }
+
+    res.json(projects);
   } catch (err) {
     console.error(err);
     return res.status(500).send('An error occurred while fetching projects.');
@@ -309,12 +306,15 @@ authRoutes.post('/login', async (req, res) => {
       return res.status(401).send('Authentication failed.');
     }
 
-    var dummyEmployee = {
-      name: "Syed Abdul Wadood",
-      tasks: "Dummy Data Tasks" 
-    }
 
-    res.json(dummyEmployee);
+    // Assuming you fetch the employeeName from the user object
+    var employeeInfo = {
+      id: user.employeeId, // or simply employeeId
+      name: user.employeeName, // Here you include the employeeName in the response
+      pic: user.employeePic
+    }
+    // console.log(employeeInfo)
+    res.json(employeeInfo);
     console.log('Login Successful');
   } catch (err) {
     console.error(err);

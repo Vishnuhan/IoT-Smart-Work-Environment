@@ -19,7 +19,8 @@ const userSchema = new Schema({
         taskSize: Number,
         activeTask: Boolean
     }
-  ]
+  ],
+  employeePic: String
 });
 
 module.exports = mongoose.model('User', userSchema);
