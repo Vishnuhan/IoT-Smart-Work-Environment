@@ -34,15 +34,23 @@ const LoginScreen = ({ navigation }) => {
       console.log(response);
       console.log('Login successful:', response.data);
       setLoggedIn(true);
+      
+       // Extracting employeeId and employeeName directly from response.data
+       const { id, name: employeeName, pic: employeePic } = response.data;
+
+       // Logging the extracted values
+       console.log('Employee ID:', id);
+       console.log('Employee Name:', employeeName);
+ 
+       // Navigating to BottomTabNav with employeeId and employeeName as parameters
+       navigation.navigate('BottomTabNav', { employeeId: id, employeeName: employeeName, employeePic: employeePic });
+ 
+
     } catch (error) {
       console.error('Error logging in:', error);
       setError('Incorrect user information. Please try again.');
     }
   };
-
-  if (loggedIn) {
-    return <BottomTabNavigator isAdmin={isAdmin} />;
-  }
 
   return (
     <View style={styles.container}>

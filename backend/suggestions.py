@@ -78,7 +78,7 @@ tfidf_new_task = tfidf_vectorizer.transform([tokenized_new_task])
 cosine_similarities = cosine_similarity(tfidf_new_task, tfidf_matrix).flatten()
 
 # Calculate task relevancy for each employee
-df['TaskRelevancy'] = cosine_similarities
+df['TaskRelevancy'] = cosine_similarities 
 
 # Calculate relative availability for each employee based on the tasks they are currently working on
 df['RelativeAvailability'] = (

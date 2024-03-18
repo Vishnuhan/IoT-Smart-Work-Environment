@@ -19,7 +19,6 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
-        {/* Add OnboardingScreen as the initial screen */}
         <Stack.Screen
           name="Onboarding"
           component={OnboardingScreen}
@@ -62,7 +61,7 @@ const App = () => {
           options={{ headerShown: true }}
         />
 
-<Stack.Screen
+        <Stack.Screen
           name="AccountPage"
           component={AccountPage} // Use a WebView component for home.html
           options={{ headerShown: true }}

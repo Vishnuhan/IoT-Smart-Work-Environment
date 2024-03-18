@@ -19,6 +19,10 @@ import { BarChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
 import AddProjectPage from './AddProjectPage'; // Adjust the import path as needed
 import TaskToggle from './TaskToggle'; // Import the TaskToggle component
+import NotificationBar from './NotificationBar';
+import CircularProgress from '@mui/material/CircularProgress';
+// import Icon from 'react-native-vector-icons/FontAwesome';
+
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
@@ -53,28 +57,40 @@ const PhasePage = ({ route }) => {
   );
 };
 
-const PMPage = () => {
+const PMPage = ({ route }) => {
+  const { employeeId, employeeName} = route.params;
+  console.log(employeeId, employeeName);
   const navigation = useNavigation();
 
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity
-          style={{ marginRight: 20 }}
-          onPress={() => navigation.navigate('AddProjectPage')}
-        >
-          <Icon name="add-box" size={30} color="#3498db" />
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', marginRight: 10 }}>
+          {employeeId === 'admin' && (
+            <TouchableOpacity
+              style={{ marginRight: 20 }}
+              onPress={() => navigation.navigate('AddProjectPage')}
+            >
+              <Icon name="add-box" size={30} color="#3498db" />
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity
+            onPress={() => navigation.navigate('NotificationBar')}
+          >
+            <Icon name="notifications" size={30} color="#3498db" />
+          </TouchableOpacity>
+        </View>
       ),
     });
-  }, [navigation]);
+  }, [navigation, employeeId]);
 
   return (
     <Stack.Navigator initialRouteName="PMTopTabNavigator" headerMode="none">
-      <Stack.Screen name="PMTopTabNavigator" component={PMTopTabNavigator} />
+      <Stack.Screen name="PMTopTabNavigator" component={PMTopTabNavigator} initialParams={{ employeeId: employeeId, employeeName: employeeName }} />
       <Stack.Screen name="ProjectDetails" component={ProjectDetailsScreen} />
-      <Stack.Screen name="Tasks" component={TasksPage} />
+      <Stack.Screen name="Tasks" component={TasksPage} initialParams={{ employeeId: employeeId }}/>
       <Stack.Screen name="AddProjectPage" component={AddProjectPage} />
+      <Stack.Screen name="NotificationBar" component={NotificationBar} initialParams={{ employeeId: employeeId }}/>
     </Stack.Navigator>
   );
 };
@@ -97,7 +113,7 @@ const renderTaskCard = (task) => (
   </View>
 );
 const TasksPage = ({ route }) => {
-  const { phase, projectName } = route.params;
+  const { phase, projectName, employeeId } = route.params;
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newTaskName, setNewTaskName] = useState('');
   const [newTaskPhase, setNewTaskPhase] = useState('');
@@ -176,7 +192,6 @@ const TasksPage = ({ route }) => {
       taskPhase: newTaskPhase,
       taskSize: newTaskSize, 
       employees: employeeInputs.filter(input => input.trim() !== ''), // Filter out any empty strings
-      dueDate: newTaskDueDate,
       taskSize: newTaskSize,
       employees: employeeInputs.filter((input) => input.trim() !== ''),
     };
@@ -232,9 +247,12 @@ const TasksPage = ({ route }) => {
       <View style={styles.header}>
         <Text style={styles.mytext}>Tasks for Phase: {phase.name}</Text>
         <Text style={styles.mytext}>Project: {projectName}</Text>
-        <TouchableOpacity onPress={handleAddTask} style={styles.addButton}>
-          <Text style={styles.addButtonText}>Add Task</Text>
-        </TouchableOpacity>
+          {employeeId === 'admin' && (
+          <TouchableOpacity onPress={handleAddTask} style={styles.addButton}>
+            <Text style={styles.addButtonText}>Add Task</Text>
+          </TouchableOpacity>
+)}
+
       </View>
       <FlatList
         data={projectTasks}
@@ -278,7 +296,7 @@ const TasksPage = ({ route }) => {
                 onChangeText={(text) => setNewTaskNumEmployees(parseInt(text) || 0)}
               />
               <TouchableOpacity onPress={handleUpdateSampleEmployees} style={styles.updateButton}>
-                <Text style={styles.addButtonText}>Update Sample Employees</Text>
+                <Text style={styles.addButtonText}>Generate AI suggestions</Text>
               </TouchableOpacity>
               <TextInput
                 style={styles.inputField}
@@ -290,7 +308,7 @@ const TasksPage = ({ route }) => {
               {renderEmployeeInputs()}
             </View>
             <View style={styles.rightSide}>
-              <Text style={styles.modalTitle}>AI Suggestion</Text>
+              <Text style={styles.modalTitle}> AI Suggestion</Text>
               <FlatList
                 data={newTaskEmployees}
                 keyExtractor={(item, index) => index.toString()}
@@ -304,7 +322,7 @@ const TasksPage = ({ route }) => {
             <View style={styles.buttonWrapper}>
               <Button title="Save" onPress={handleSaveTask} />
             </View>
-            <View style={[styles.buttonWrapper, styles.cancelButtonWrapper]}>
+            <View style={[styles.buttonWrapper]}>
               <Button title="Cancel" onPress={handleCloseModal} />
             </View>
           </View>
@@ -314,6 +332,8 @@ const TasksPage = ({ route }) => {
   );
 };
 
+
+
 const renderProjectCard = (navigation, project) => {
   const teamText = project.Team ? `Team: ${project.Team.join(', ')}` : 'Team: N/A';
 
@@ -322,63 +342,53 @@ const renderProjectCard = (navigation, project) => {
       onPress={() => navigation.navigate('ProjectDetails', { project, navigation })}
     >
       <View style={styles.projectCard}>
-        <Text style={styles.cardTitle}>Name: {project.Name}</Text>
-        <Text style={styles.cardText}>Percentage Complete: {project.Percentage_Complete}%</Text>
-        <Text style={styles.cardText}>{teamText}</Text>
-        <Text style={styles.cardText}>Due Date: {project.Due_Date}</Text>
-        <Text style={styles.cardText}>Tasks: {project.Tasks ? project.Tasks.join(', ') : 'N/A'}</Text>
+        <View style={styles.leftContent}>
+          <Text style={styles.cardTitle}>Name: {project.Name}</Text>
+          <Text style={styles.cardText}>Due Date: {project.Due_Date}</Text>
+          {/* <Text style={styles.cardText}>Tasks: {project.Tasks ? project.Tasks.join(', ') : 'N/A'}</Text> */}
+          <Text style={styles.cardText}>{teamText}</Text>
+        </View>
+        <View style={styles.rightContent}>
+          <Text style={styles.percentText}>Percentage Complete: {project.Percentage_Complete}%</Text>
+          <CircularProgress variant="determinate" value={project.Percentage_Complete} />
+        </View>
       </View>
     </TouchableOpacity>
   );
 };
 
-// const ProjectDetailsScreen = ({ route }) => {
-//   const { project, navigation } = route.params;
 
-//   return (
-//     <View>
-//       <Text style={styles.mytext}>Project Phases</Text>
-//       <FlatList
-//         data={PHASES}
-//         keyExtractor={(item) => item.name}
-//         renderItem={({ item }) => renderPhaseCard(navigation, item, project.Name)}
-//       />
-//     </View>
-//   );
-// };
-
-// const chartColors = {
-//   backgroundColor: [
-//     'rgba(255, 99, 132, 0.2)',
-//     'rgba(255, 159, 64, 0.2)',
-//     'rgba(255, 205, 86, 0.2)',
-//     'rgba(75, 192, 192, 0.2)',
-//   ],
-//   borderColor: [
-//     'rgb(255, 99, 132)',
-//     'rgb(255, 159, 64)',
-//     'rgb(255, 205, 86)',
-//     'rgb(75, 192, 192)',
-//   ],
-// };
 
 const ProjectDetailsScreen = ({ route }) => {
   const { project, navigation } = route.params;
+  
+
   const chartConfig = {
     backgroundGradientFrom: "#fff",
     backgroundGradientTo: "#fff",
-    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    barPercentage: 0.5, // Adjust the width of the bars, default is 0.4
+    //barRadius: 5, // Adjust the corner radius of the bars
+    barStyle: {
+      borderRadius: 10, // Additional styling for the bars, if needed
+    },
+    formatYLabel: label => label + '%',
   };
+  
 
   const screenWidth = Dimensions.get("window").width;
+  // const screenWidth = Dimensions.get("window").width;
+  const chartWidth = screenWidth - 5; 
 
   const data = {
-    labels: PHASES.map(phase => phase.name),
+    labels: PHASES.map(phase => phase.name), //yAxisLabel: 'Percentage Complete',
     datasets: [{
       data: PHASES.map(phase => phase.percentage)
     }]
   };
+
+  
 
   return (
     <ScrollView>
@@ -390,27 +400,30 @@ const ProjectDetailsScreen = ({ route }) => {
           renderItem={({ item }) => renderPhaseCard(navigation, item, project.Name)}
           scrollEnabled={false} // Disables scrolling for the FlatList, since it's inside a ScrollView
         />
+        <Text style={styles.mytext}>Progress Chart</Text>
         <BarChart
           data={data}
-          width={screenWidth}
+          width={chartWidth}
           height={220}
-          yAxisLabel="%"
+          yAxisLabel=""
           chartConfig={chartConfig}
-          verticalLabelRotation={30}
+          verticalLabelRotation={0}
+          style={styles.chart}
         />
       </View>
     </ScrollView>
   );
 };
 
-const AllScreen = () => {
+const AllScreen = ({route}) => {
   const navigation = useNavigation();
   const [projects, setProjects] = useState([]);
   const [error, setError] = useState(null);
+  const {employeeName} = route.params;
 
   const fetchProjects = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/auth/projects');
+      const response = await axios.get(`http://localhost:3001/auth/projects?employeeName=${employeeName}`);
       setProjects(response.data);
     } catch (error) {
       console.error('Error fetching projects:', error);
@@ -426,6 +439,10 @@ const AllScreen = () => {
     <ScrollView>
       <View>
         <Text style={styles.mytext}>All Projects</Text>
+        <TouchableOpacity onPress={fetchProjects} style={{ alignSelf: 'flex-end', marginTop: -10 }}>
+          <Icon name="refresh" size={20} color="#3498db" style={{ marginRight: 20, marginTop: -20, marginBottom: 5 }} />
+        </TouchableOpacity>
+
         <FlatList
           style={{ flex: 1 }}
           data={projects}
@@ -437,15 +454,16 @@ const AllScreen = () => {
   );
 };
 
-const OngoingScreen = () => {
+const OngoingScreen = ({route}) => {
   const navigation = useNavigation();
   const [projects, setProjects] = useState([]);
+  const {employeeName} = route.params;
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/auth/projects');
-        setProjects(response.data);
+        const response = await axios.get(`http://localhost:3001/auth/projects?employeeName=${employeeName}`);
+      setProjects(response.data);
       } catch (error) {
         console.error('Error fetching projects:', error);
       }
@@ -470,15 +488,16 @@ const OngoingScreen = () => {
   );
 };
 
-const CompletedScreen = () => {
+const CompletedScreen = ({route}) => {
   const navigation = useNavigation();
   const [projects, setProjects] = useState([]);
+  const {employeeName} = route.params;
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/auth/projects');
-        setProjects(response.data);
+      const response = await axios.get(`http://localhost:3001/auth/projects?employeeName=${employeeName}`);
+      setProjects(response.data);
       } catch (error) {
         console.error('Error fetching projects:', error);
       }
@@ -503,14 +522,18 @@ const CompletedScreen = () => {
   );
 };
 
-const PMTopTabNavigator = () => (
-  <Tab.Navigator>
-    <Tab.Screen name="All" component={AllScreen} />
-    <Tab.Screen name="Ongoing" component={OngoingScreen} />
-    <Tab.Screen name="Completed" component={CompletedScreen} />
-  </Tab.Navigator>
-);
+const PMTopTabNavigator = ({ route }) => {
+  // Destructuring employeeId and employeeName from route.params
+  const { employeeId, employeeName } = route.params;
 
+  return (
+    <Tab.Navigator>
+      <Tab.Screen name="All" component={AllScreen} initialParams={{ employeeName: employeeName }} />
+      <Tab.Screen name="Ongoing" component={OngoingScreen} initialParams={{ employeeName: employeeName }} />
+      <Tab.Screen name="Completed" component={CompletedScreen} initialParams={{ employeeName: employeeName }} />
+    </Tab.Navigator>
+  );
+};
 const styles = StyleSheet.create({
   // ... your existing styles
   phaseCardContainer: {
@@ -537,15 +560,13 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   taskCard: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 16,
-    margin: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
+      backgroundColor: '#fff',
+      padding: 10,
+      margin: 3,
+      marginLeft: 2,
+      borderRadius: 5,
+      borderWidth: 1,
+      borderColor: '#000', // Black border
   },
   taskName: {
     fontSize: 18,
@@ -564,8 +585,15 @@ const styles = StyleSheet.create({
   projectCard: {
     backgroundColor: '#fff',
     padding: 10,
-    margin: 5,
+    margin: 3,
+    marginLeft: 2,
     borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#000', // Black border
+    
+    flexDirection: 'row',
+    justifyContent: 'space-between',   
+    marginBottom: 10,
   },
   cardTitle: {
     fontSize: 18,
@@ -577,11 +605,6 @@ const styles = StyleSheet.create({
     font: "Quicksand",
     marginBottom: 6,
     color: '#555',
-  },
-  mytext: {
-    fontWeight: 'bold',
-    fontfamily: 'Roboto',
-    marginLeft: '10px',
   },
   header: {
     flexDirection: 'row',
@@ -602,7 +625,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#2ecc71', // Green background color
     padding: 12,
     borderRadius: 8,
-    marginTop: 15,
+    marginTop: 10,
     marginBottom: 20,
   },
   addButtonText: {
@@ -626,10 +649,10 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 12,
     fontWeight: 'bold',
     marginBottom: 10,
-    padding: 15,
+    padding: 4,
     backgroundColor: '#3498db', // Header background color
     color: '#fff', // Header text color
     textAlign: 'center',
@@ -649,10 +672,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: "150%"
   },
-  buttonWrapper: {
-    flex: 1,
-    marginHorizontal: 10, // Add margin to each button
-  },
+ 
   saveButton: {
     backgroundColor: '#3498db',
     padding: 12,
@@ -665,14 +685,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     marginTop: 10,
     marginBottom: 10,
-    width: "100%"
+    width: "150%" 
   },
   buttonWrapper: {
-    flex: 1,
+    flex: 2,
     marginHorizontal: 10, // Add margin to each button
-  },
-  cancelButtonWrapper: {
-    flex: 1, // Set the same flex value for both buttons
+    width: "100px",
+    backgroundColor: 'red'
   },
   cancelButton: {
     padding: 12,
@@ -711,7 +730,7 @@ const styles = StyleSheet.create({
 
   mytext: {
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 15,
     margin: 10,
   },
 
@@ -747,12 +766,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     color: '#3498db',
   },
-  taskCard: {
-    backgroundColor: '#ecf0f1',
-    padding: 20,
-    borderRadius: 10,
-    marginVertical: 10,
-  },
+
   taskName: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -789,11 +803,6 @@ const styles = StyleSheet.create({
     width: '40%',
     backgroundColor: '#ecf0f1',
   },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
   inputField: {
     borderWidth: 1,
     borderColor: '#bdc3c7',
@@ -814,13 +823,37 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: 20,
   },
-  buttonWrapper: {
+  chart: {
+    marginTop: 10, // Add margin top
+    marginBottom: 10,
+    borderRadius: 20, // Add border radius
+    borderWidth: 2, // Add border width if needed
+    borderColor: '#000', // Add border color if needed
+  },
+  
+  leftContent: {
     flex: 1,
-    marginHorizontal: 10,
   },
-  cancelButtonWrapper: {
-    backgroundColor: '#e74c3c',
+  rightContent: {
+    marginLeft: 10,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 5,
+    marginBottom: 5,
   },
+  cardTitle: {
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  cardText: {
+    marginBottom: 10
+  },
+  percentText:{
+    fontWeight: 'bold',
+    marginBottom: 10,
+  }
+
 });
 
 export default PMPage;
