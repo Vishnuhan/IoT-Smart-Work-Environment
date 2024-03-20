@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet , Alert} from 'react-native';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import BottomTabNavigator from './BottomTabNavigator';
@@ -13,6 +13,12 @@ const AddProject = () => {
   //const navigation = useNavigation();
 
   const handleAddProject = async () => {
+
+    if (!projectName || !dueDate || !team) {
+      Alert.alert('TextFields cannot be empty');
+      return;
+    }
+
     try {
       const teamArray = team.split(',').map(item => item.trim());
       const projectData = {
