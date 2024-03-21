@@ -21,6 +21,7 @@ import AddProjectPage from './AddProjectPage'; // Adjust the import path as need
 import TaskToggle from './TaskToggle'; // Import the TaskToggle component
 import NotificationBar from './NotificationBar';
 import CircularProgress from '@mui/material/CircularProgress';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';  
 // import Icon from 'react-native-vector-icons/FontAwesome';
 
 
@@ -28,8 +29,8 @@ const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
 
 const PHASES = [
-  { name: 'Implementation', percentage: Math.floor(Math.random() * 100) },
   { name: 'Planning', percentage: Math.floor(Math.random() * 100) },
+  { name: 'Implementation', percentage: Math.floor(Math.random() * 100) },
   { name: 'Testing', percentage: Math.floor(Math.random() * 100) },
   { name: 'Deployment', percentage: Math.floor(Math.random() * 100) },
 ];
@@ -322,6 +323,7 @@ const TasksPage = ({ route }) => {
 
 
 
+
 const renderProjectCard = (navigation, project) => {
   const teamText = project.Team ? `Team: ${project.Team.join(', ')}` : 'Team: N/A';
 
@@ -340,7 +342,7 @@ const renderProjectCard = (navigation, project) => {
           <Text style={styles.percentText}>Percentage Complete: {project.Percentage_Complete}%</Text>
           <CircularProgress variant="determinate" value={project.Percentage_Complete} />
         </View>
-      </View>
+      </View> 
     </TouchableOpacity>
   );
 };
