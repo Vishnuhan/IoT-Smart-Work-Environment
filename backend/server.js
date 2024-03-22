@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const User = require('./User');
 const Project = require('./Projects');
 const Room = require('./Rooms');
+const Notification = require('./Notifications')
 
 const { exec } = require('child_process');
 const { getSystemErrorMap } = require('util');
@@ -359,11 +360,110 @@ authRoutes.post('/addtask', async (req, res) => {
   }
 });
 
+const notiRoutes = express.Router();
+
+// Fetch notifications
+notiRoutes.get('/notifications', async (req, res) => {
+  const { employeeID } = req.query;
+  // console.log('in the notification tab: ', employeeID)
+  try {
+    const notifications = await Notification.find({ targetEmployeeIds: employeeID });
+    console.log(notifications)
+    res.json(notifications);
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+    res.status(500).send('Server error');
+  }
+});
+
+notiRoutes.post('/addnotifications', async (req, res) => {
+  const { title, message, targetEmployeeIds, createdAt } = req.body;
+
+  try {
+    // Check if all targetEmployeeIds exist in the User collection by their employeeId
+    const employeeChecks = targetEmployeeIds.map(async (id) => {
+      console.log(id)
+      const employeeExists = await User.findOne({ employeeId: id }); // Find by employeeId field
+      console.log(employeeExists ? true : false)
+      return employeeExists ? true : false;
+     
+    });
+    
+    const results = await Promise.all(employeeChecks);
+    const allEmployeesExist = results.every(exists => exists);
+
+    if (!allEmployeesExist) {
+      return res.status(400).send('One or more Employee IDs do not exist.');
+    }
+
+    // If all employee IDs exist, proceed to create the notification
+    const newNotification = new Notification({
+      title,
+      message,
+      createdAt: createdAt ? new Date(createdAt) : undefined, // Use provided createdAt or default to current date/time
+      targetEmployeeIds,
+      readBy: [], // Initially, no one has read the notification
+    });
+
+    await newNotification.save();
+    res.status(201).json(newNotification);
+  } catch (error) {
+    console.error('Error adding notification:', error);
+    res.status(500).send('Server error');
+  }
+});
+
+// Change the method to PATCH and adjust the route to better reflect the action
+notiRoutes.patch('/notifications/read', async (req, res) => {
+  const { title, employeeID } = req.query;
+  
+  try {
+    // Find the notification by title and update it
+    const notificationUpdated = await Notification.findOneAndUpdate(
+      { title: title }, // Find a document by title
+      { $addToSet: { readBy: employeeID } }, // Use $addToSet to add employeeID to the readBy array if it's not already present
+      { new: true } // Return the updated document
+    );
+
+    if (!notificationUpdated) {
+      return res.status(404).send('Notification not found.');
+    }
+
+    res.json(notificationUpdated);
+  } catch (error) {
+    console.error('Error marking notification as read:', error);
+    res.status(500).send('Server error');
+  }
+});
+
+notiRoutes.delete('/notifications/delete', async (req, res) => {
+  const { title } = req.query;
+  
+  try {
+    // Delete the notification by title
+    const notificationDeleted = await Notification.findOneAndDelete({ title: title });
+
+    if (!notificationDeleted) {
+      return res.status(404).send('Notification not found.');
+    }
+
+    // Optionally, return some information about the deleted notification
+    res.json({ message: 'Notification successfully deleted', title: notificationDeleted.title });
+  } catch (error) {
+    console.error('Error deleting notification:', error);
+    res.status(500).send('Server error');
+  }
+});
+
+
+
+
 
 
 app.use('/auth', authRoutes);
 app.use('/auth', projectRoutes);
 app.use('/auth', roomRoutes);
+app.use('/auth', notiRoutes);
 
 
 

@@ -11,13 +11,15 @@ import BookRoomPage from './BookRoomPage';
 import OnboardingScreen from './OnboardScreen'; // Import the OnboardingScreen component
 import AccountPage from './AccountPage';
 import AddProject from './AddProjectPage';
+import AddNotification from './AddNotification';
+
 
 const Stack = createStackNavigator();
 
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
+      <Stack.Navigator initialRouteName="Onboarding">
         <Stack.Screen
           name="Onboarding"
           component={OnboardingScreen}
@@ -65,6 +67,13 @@ const App = () => {
           component={AccountPage} // Use a WebView component for home.html
           options={{ headerShown: true }}
         />
+
+      <Stack.Screen
+          name="AddNotification"
+          component={AddNotification} // Use a WebView component for home.html
+          options={{ headerShown: true }}
+        />  
+        
 
       </Stack.Navigator>
     </NavigationContainer>
