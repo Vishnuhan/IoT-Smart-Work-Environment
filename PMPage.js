@@ -44,18 +44,6 @@ const renderPhaseCard = (navigation, phase, projectName) => (
     </View>
   </TouchableOpacity>
 );
- 
-const PhasePage = ({ route }) => {
-  const { projectName, navigation } = route.params;
-
-  return (
-    <FlatList
-      data={PHASES}
-      keyExtractor={(item) => item.name}
-      renderItem={({ item }) => renderPhaseCard(navigation, item, projectName)}
-    />
-  );
-};
 
 const PMPage = ({ route }) => {
   const { employeeId, employeeName} = route.params;
