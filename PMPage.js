@@ -85,22 +85,28 @@ const PMPage = ({ route }) => {
 };
 
 
-const renderTaskCard = (task) => (
-  <View style={styles.taskCard}>
-    <Text style={styles.taskName}>Task Name: {task.taskName}</Text>
-    <Text style={styles.phase}>Phase: {task.taskPhase}</Text>
-    
-    {/* Include the TaskToggle component here */}
-    <TaskToggle project={task.project} taskName={task.taskName} />
+const renderTaskCard = (task) => {
+  // If you need to log the task, do it inside the function body before the return statement.
+  console.log('task', task);
 
-    <Text style={styles.completionStatus}>
-      Completion Status: {task.taskComplete ? 'Complete' : 'Incomplete'}
-    </Text>
-    <Text style={styles.employees}>
-      Employees: {task.employees ? task.employees.join(', ') : 'None'}
-    </Text>
-  </View>
-);
+  return (
+    <View style={styles.taskCard}>
+      <Text style={styles.taskName}>Task Name: {task.taskName}</Text>
+      <Text style={styles.phase}>Phase: {task.taskPhase}</Text>
+      
+      {/* Include the TaskToggle component here */}
+      <TaskToggle project={task.project} taskName={task.taskName} />
+
+      <Text style={styles.completionStatus}>
+        Completion Status: {task.taskComplete ? 'Complete' : 'Incomplete'}
+      </Text>
+      <Text style={styles.employees}>
+        Employees: {task.employees ? task.employees.join(', ') : 'None'}
+      </Text>
+    </View>
+  );
+};
+
 const TasksPage = ({ route }) => {
   const { phase, projectName, employeeId } = route.params;
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -413,8 +419,10 @@ const AllScreen = ({route}) => {
 
   const fetchProjects = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/auth/projects?employeeName=${employeeName}`);
+      const response = await axios.get(`http://localhost:3001/auth/assignedprojects?employeeName=${employeeName}`);
+      // const response =  await axios.get(`http://localhost:3001/auth/projects`)
       setProjects(response.data);
+      console.log(response.data)
     } catch (error) {
       console.error('Error fetching projects:', error);
       setError('Error fetching projects');
@@ -452,7 +460,8 @@ const OngoingScreen = ({route}) => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/auth/projects?employeeName=${employeeName}`);
+        const response = await axios.get(`http://localhost:3001/auth/assignedprojects?employeeName=${employeeName}`);
+        // const response =  await axios.get(`http://localhost:3001/auth/projects`)
       setProjects(response.data);
       } catch (error) {
         console.error('Error fetching projects:', error);
@@ -486,7 +495,8 @@ const CompletedScreen = ({route}) => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-      const response = await axios.get(`http://localhost:3001/auth/projects?employeeName=${employeeName}`);
+       const response = await axios.get(`http://localhost:3001/auth/assignedprojects?employeeName=${employeeName}`);
+     
       setProjects(response.data);
       } catch (error) {
         console.error('Error fetching projects:', error);

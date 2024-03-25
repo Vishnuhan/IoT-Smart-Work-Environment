@@ -264,9 +264,9 @@ roomRoutes.put('/rooms/:roomName/times/:times', async (req, res) => {
 
 
 
-projectRoutes.get('/projects', async (req, res) => {
+projectRoutes.get('/assignedprojects', async (req, res) => {
   const { employeeName } = req.query; // Extracting employeeName from query parameters
-
+  console.log('in the projects api');
   try {
     let projects;
     if (employeeName === 'admin') {
@@ -276,11 +276,22 @@ projectRoutes.get('/projects', async (req, res) => {
       projects = await Project.find({
         $or: [
           { Team: employeeName }, // Included in the project team
-          { "Tasks.employees": employeeName } // Included in any task's employees
+          { "Tasks.employees": employeeName } // Included in any task's employees, corrected path
         ]
       });
     }
+    console.log(projects);
+    res.json(projects);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send('An error occurred while fetching projects.');
+  }
+});
 
+projectRoutes.get('/projects', async (req, res) => {
+  try {
+    // Fetch all projects from MongoDB
+    const projects = await Project.find();
     res.json(projects);
   } catch (err) {
     console.error(err);

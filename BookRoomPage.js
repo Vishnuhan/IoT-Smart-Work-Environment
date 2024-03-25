@@ -16,6 +16,14 @@ const BookRoomPage = () => {
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedTime, setSelectedTime] = useState('');
+  const [notification, setNotification] = useState({ visible: false, message: '', theme: 'light' });
+
+  const showNotification = (message, theme = 'light') => {
+    setNotification({ visible: true, message, theme });
+    setTimeout(() => {
+      setNotification({ visible: false, message: '', theme: 'light' });
+    }, 3000); // hide after 3 seconds
+  };
 
   const onRoomClick = (roomId) => {
     console.log('room clicked');
@@ -71,7 +79,7 @@ const BookRoomPage = () => {
         console.log('Room is available for booking at this time');
         setModalVisible(false);
         await updateBookingStatus(room, time, false);
-        Alert.alert('Booking Successful', `You have successfully booked ${room} at ${time}`);
+        showNotification(`You have successfully booked ${room} for ${time}!`, 'green');
 
         // Set a timeout to revert booking status after 1 minute
         setTimeout(async () => {
@@ -83,6 +91,7 @@ const BookRoomPage = () => {
       } else {
         console.log('Not available for this time');
         setModalVisible(false);
+        showNotification(`Booking UnSuccessful for ${room} at ${time}. Please book another timeslot!`, 'red');
         Alert.alert(
           'Booking UnSuccessful',
           'Room is not available for booking at this time.',
@@ -92,7 +101,7 @@ const BookRoomPage = () => {
       }
     } catch (error) {
       console.error('Error handling booking:', error);
-      Alert.alert('Error', 'An error occurred while processing your booking. Please try again.');
+      showNotification('An error occurred while processing your booking. Please try again.', 'red');
     }
   };
 
@@ -241,6 +250,24 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
+  },
+  notification: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    zIndex: 1000,
+  },
+  notificationText: {
+    color: '#000',
+  },
+  closeButton: {
+    color: '#000',
+    fontWeight: 'bold',
   },
 });
 

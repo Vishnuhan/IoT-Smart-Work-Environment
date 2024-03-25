@@ -1,21 +1,24 @@
-import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, Button, StyleSheet , Alert} from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import axios from 'axios';
-import { useNavigation } from '@react-navigation/native';
-import BottomTabNavigator from './BottomTabNavigator';
 
 const AddProject = () => {
   const [projectName, setProjectName] = useState('');
   const [percentageComplete, setPercentageComplete] = useState('');
   const [team, setTeam] = useState('');
   const [dueDate, setDueDate] = useState('');
+  const [notification, setNotification] = useState({ visible: false, message: '', theme: 'light' });
 
-  //const navigation = useNavigation();
+  const showNotification = (message, theme = 'light') => {
+    setNotification({ visible: true, message, theme });
+    setTimeout(() => {
+      setNotification({ visible: false, message: '', theme: 'light' });
+    }, 3000); // hide after 3 seconds
+  };
 
   const handleAddProject = async () => {
-
-    if (!projectName || !dueDate || !team) {
-      Alert.alert('TextFields cannot be empty');
+    if (!projectName || !percentageComplete || !team || !dueDate) {
+      showNotification('TextFields cannot be empty', 'red');
       return;
     }
 
@@ -29,15 +32,22 @@ const AddProject = () => {
       };
 
       await axios.post('http://localhost:3001/auth/projects', projectData);
-      console.log('New Project Added:', projectData);
-  //    navigation.navigate('PMPage');
+      showNotification('Project successfully added!', 'green');
     } catch (error) {
-      console.error('Error adding project:', error);
+      showNotification('Project was not added!', 'red');
     }
   };
 
   return (
     <View style={styles.container}>
+      {notification.visible && (
+        <View style={[styles.notification, { backgroundColor: notification.theme === 'red' ? '#FFCCCC' : '#CCFFCC' }]}>
+          <Text style={styles.notificationText}>{notification.message}</Text>
+          <TouchableOpacity onPress={() => setNotification({ visible: false, message: '', theme: 'light' })}>
+            <Text style={styles.closeButton}>X</Text>
+          </TouchableOpacity>
+        </View>
+      )}
       <Text style={styles.title}>Add New Project</Text>
       <TextInput
         style={styles.input}
@@ -66,29 +76,46 @@ const AddProject = () => {
       />
       <Button title="Add Project" onPress={handleAddProject} />
     </View>
-    
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
+    justifyContent: 'center',
+    padding: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   input: {
-    height: 40,
     width: '100%',
-    borderColor: '#3498db',
-    borderBottomWidth: 1,
-    marginBottom: 16,
-    paddingLeft: 8,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 5,
+    padding: 10,
+  },
+  notification: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    zIndex: 1000,
+  },
+  notificationText: {
+    color: '#000',
+  },
+  closeButton: {
+    color: '#000',
+    fontWeight: 'bold',
   },
 });
 
