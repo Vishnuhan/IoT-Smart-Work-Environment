@@ -54,15 +54,32 @@
 
 // export default TaskToggle;
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Switch, StyleSheet } from 'react-native';
+import axios from 'axios';
 
-const TaskToggle = () => {
-  const [isComplete, setIsComplete] = useState(false);
+const TaskToggle = ({ project, taskName, taskComplete }) => {
+  useEffect(() => {
+    console.log(project);
+    
+  }, []);
 
-  const onToggleSwitch = () => {
+  const [isComplete, setIsComplete] = useState(taskComplete);
+ 
+  const onToggleSwitch = async() => {
     setIsComplete((prevValue) => !prevValue);
-    // Add logic to update the completion status in your backend/API
+    console.log(project)
+    await axios.post('http://localhost:3001/auth/tasktoggle', {
+      project: project, 
+      taskName: taskName,
+      taskComplete: !isComplete
+    })
+    .then(response => {
+      console.log(response);
+    })
+    .catch(error => {
+      console.error('Error updating task completion status:', error);
+    });
   };
 
   return (
