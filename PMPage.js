@@ -21,12 +21,13 @@ import AddProjectPage from './AddProjectPage'; // Adjust the import path as need
 import TaskToggle from './TaskToggle'; // Import the TaskToggle component
 import NotificationBar from './NotificationBar';
 import CircularProgress from '@mui/material/CircularProgress';
-import { AnimatedCircularProgress } from 'react-native-circular-progress';  
-// import Icon from 'react-native-vector-icons/FontAwesome';
+
+
 
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
+
 
 /*
   Make Axios API call to fetch planning, implementation, testing, and deployment percentages 
@@ -389,6 +390,14 @@ const renderProjectCard = (navigation, project) => {
     percentage = 0;
   }
 
+  let color = '#2ecc71'; // Default color: green
+
+  if (percentage < 35) {
+    color = '#ff5c5c'; // Red color for less than 35%
+  } else if (percentage >= 35 && percentage < 70) {
+    color = '#f1c40f'; // Yellow color for 35% to 70%
+  }
+
   return (
     <TouchableOpacity
       onPress={() => navigation.navigate('ProjectDetails', { project, navigation })}
@@ -608,7 +617,7 @@ const PMTopTabNavigator = ({ route }) => {
 const styles = StyleSheet.create({
   // ... your existing styles
   phaseCardContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: '#111',
     borderRadius: 8,
     margin: 10,
     shadowColor: '#000',
@@ -654,30 +663,30 @@ const styles = StyleSheet.create({
     color: '#2ecc71',
   },
   projectCard: {
-    backgroundColor: '#f0ffff',
+    backgroundColor: 'white',
     padding: 10,
-    margin: 3,
+    margin: 5,
     marginLeft: 2,
     borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#000', // Black border
+    borderWidth: 3,
+    borderColor: '#a832ff', // Neon-ish purple border color
     flexDirection: 'row',
-    justifyContent: 'space-between',   
+    justifyContent: 'space-between',
     marginBottom: 12,
   },
+  
   
   cardTitle: {
     fontSize: 15,
     fontWeight: 'bold',
     marginBottom: 8,
-    fontFamily: 'Snell Roundhandlic'
+    fontFamily: 'sans-serif'
   },
   cardText: {
     fontSize: 14,
-    font: "Quicksand",
-    fontWeight: 'bold',
+    fontFamily: 'sans-serif',
     marginBottom: 6,
-    color: '#005ced'
+    color: '#000000'
   },
   header: {
     flexDirection: 'row',
