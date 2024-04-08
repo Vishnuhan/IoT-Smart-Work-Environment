@@ -150,11 +150,7 @@ const TasksPage = ({ route }) => {
     const fetchTasks = async () => {
       try {
         const response = await axios.get('http://localhost:3001/auth/projects');
-<<<<<<< HEAD
         console.log(response);
-=======
-        console.log(response)
->>>>>>> 467a35e3b8be9a5e25fb8660510466fa0db5627e
         const project = response.data.find((p) => p.Name === projectName);
   
         if (project) {
@@ -407,11 +403,7 @@ const renderProjectCard = (navigation, project) => {
         <View style={styles.separator}></View>
         <View style={styles.rightContent}>
           <Text style={styles.percentText}>Percentage: {percentage}%</Text>
-<<<<<<< HEAD
           <CircularProgress thickness='8'  variant="determinate" value={percentage} />
-=======
-          <CircularProgress variant="determinate" value={percentage} />
->>>>>>> 467a35e3b8be9a5e25fb8660510466fa0db5627e
         </View>
       </View> 
     </TouchableOpacity>
