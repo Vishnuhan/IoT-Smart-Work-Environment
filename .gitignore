@@ -11,7 +11,7 @@ yarn.lock
 # Expo
 .expo/
 dist/
-web-build/
+
 
 # Native
 *.orig.*
@@ -39,5 +39,5 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-./backend
+# ./backend
 .vercel
