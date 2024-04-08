@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import axios from 'axios';
+import DateTimePickerModal from 'react-native-modal-datetime-picker'; // This is for a modal date picker
 
 const AddProject = () => {
   const [projectName, setProjectName] = useState('');
   const [percentageComplete, setPercentageComplete] = useState('');
   const [team, setTeam] = useState('');
   const [dueDate, setDueDate] = useState('');
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [notification, setNotification] = useState({ visible: false, message: '', theme: 'light' });
 
   const showNotification = (message, theme = 'light') => {
@@ -38,6 +40,26 @@ const AddProject = () => {
     }
   };
 
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  const handleConfirmDate = (date) => {
+    setDueDate(date.toISOString().split('T')[0]); // Save the formatted date
+    hideDatePicker();
+  };
+
+  const handleDateChange = (event) => {
+    setDueDate(event.target.value); // Update due date from the event
+    setShowDatePicker(false); // Hide the date picker
+  };
+
+  
+  
   return (
     <View style={styles.container}>
       {notification.visible && (
@@ -74,6 +96,26 @@ const AddProject = () => {
         value={dueDate}
         onChangeText={setDueDate}
       />
+
+<View style={styles.datePickerRow}>
+        <TextInput
+          style={[styles.input, styles.dateInput]}
+          placeholder="Due Date"
+          value={dueDate}
+          onChangeText={() => {}} // The date is set by the date picker, not manual edit
+          editable={false} // Make the text input non-editable
+        />
+        <TouchableOpacity onPress={showDatePicker} style={styles.calendarButton}>
+          <Text style={styles.calendarText}>📅</Text>
+        </TouchableOpacity>
+      </View>
+
+      <DateTimePickerModal
+        isVisible={isDatePickerVisible}
+        mode="date"
+        onConfirm={handleConfirmDate}
+        onCancel={hideDatePicker}
+      />
       <Button title="Add Project" onPress={handleAddProject} />
     </View>
   );
@@ -98,6 +140,24 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderRadius: 5,
     padding: 10,
+  },
+  datePickerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+  },
+  dateInput: {
+    flex: 1,
+  },
+  calendarButton: {
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 5,
+    padding: 10,
+    marginLeft: 5,
+  },
+  calendarText: {
+    fontSize: 18,
   },
   notification: {
     position: 'absolute',

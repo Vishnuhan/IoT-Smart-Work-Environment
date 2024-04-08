@@ -149,7 +149,7 @@ const TasksPage = ({ route }) => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/auth/projects');
+        const response = await axios.get('https://capstone-cmml.onrender.com/auth/projects');
         console.log(response);
         const project = response.data.find((p) => p.Name === projectName);
   
@@ -174,8 +174,8 @@ const TasksPage = ({ route }) => {
     }
 
     try {
-      const response = await axios.get('http://localhost:3001/auth/users');
-      const user_Data = await axios.post('http://localhost:3001/auth/get-suggestions.py', {
+      const response = await axios.get('https://capstone-cmml.onrender.com/auth/users');
+      const user_Data = await axios.post('https://capstone-cmml.onrender.com/auth/get-suggestions.py', {
         user_data: response.data,
         new_task_name: newTaskName,
       });
@@ -223,10 +223,10 @@ const TasksPage = ({ route }) => {
     try {
       // Make the API call to submit the task details
       // Adjust the URL and request payload according to your backend API
-       await axios.post('http://localhost:3001/auth/addtask', taskDetails);
+       await axios.post('https://capstone-cmml.onrender.com/auth/addtask', taskDetails);
        console.log('Task successfully added with employees');
 
-      await axios.post('http://localhost:3001/auth/addtasktoproject', taskDetails);
+      await axios.post('https://capstone-cmml.onrender.com/auth/addtasktoproject', taskDetails);
       console.log('Task successfully added to project data');
   
       // Handle any post-save actions, like closing the modal or clearing the form
@@ -496,7 +496,7 @@ const AllScreen = ({route}) => {
 
   const fetchProjects = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/auth/assignedprojects?employeeName=${employeeName}`);
+      const response = await axios.get(`https://capstone-cmml.onrender.com/auth/assignedprojects?employeeName=${employeeName}`);
 
       setProjects(response.data);
     } catch (error) {
@@ -538,7 +538,7 @@ const OngoingScreen = ({ route }) => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/auth/assignedprojects?employeeName=${employeeName}`);
+        const response = await axios.get(`https://capstone-cmml.onrender.com/auth/assignedprojects?employeeName=${employeeName}`);
         const filteredProjects = response.data.filter((project) => calculateProjectCompletion(project) < 100);
         setProjects(filteredProjects);
       } catch (error) {
@@ -570,7 +570,7 @@ const CompletedScreen = ({ route }) => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/auth/assignedprojects?employeeName=${employeeName}`);
+        const response = await axios.get(`https://capstone-cmml.onrender.com/auth/assignedprojects?employeeName=${employeeName}`);
         const filteredProjects = response.data.filter((project) => calculateProjectCompletion(project) === 100);
         setProjects(filteredProjects);
       } catch (error) {
