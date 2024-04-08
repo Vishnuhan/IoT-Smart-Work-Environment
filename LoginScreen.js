@@ -7,7 +7,6 @@ import axios from 'axios';
 import colors from './colors';  // Assuming colors.js is in the same directory
 
 
-
 const COLORS = {
   primary: '#075eec',
   secondary: '#222',
@@ -24,7 +23,7 @@ const LoginScreen = ({ navigation }) => {
   const handleLogin = async () => {
     try {
       const loginData = { employeeId, password };
-      const response = await axios.post('http://18.216.105.223:3001/auth/login', loginData);
+      const response = await axios.post('http://localhost:3001/auth/login', loginData);
     //  const response = await axios.post('http://localhost:3001/auth/login', loginData);
 
       if (employeeId === 'admin' && password === 'admin') {
