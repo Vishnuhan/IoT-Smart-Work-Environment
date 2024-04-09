@@ -83,13 +83,13 @@ const PMPage = ({ route }) => {
               style={{ marginRight: 20 }}
               onPress={() => navigation.navigate('AddProjectPage')}
             >
-              <Icon name="add-box" size={30} color="#3498db" />
+              <Icon name="add-box" size={30} color='#a832ff' />
             </TouchableOpacity>
           )}
           <TouchableOpacity
             onPress={() => navigation.navigate('NotificationBar')}
           >
-            <Icon name="notifications" size={30} color="#3498db" />
+            <Icon name="notifications" size={30} color='#a832ff' />
           </TouchableOpacity>
         </View>
       ),
@@ -408,7 +408,7 @@ const renderProjectCard = (navigation, project) => {
         <View style={styles.separator}></View>
         <View style={styles.rightContent}>
           <Text style={styles.percentText}>Percentage: {percentage}%</Text>
-          <CircularProgress thickness='8'  variant="determinate" value={percentage} />
+          <CircularProgress thickness='8'  variant="determinate" value={percentage} color="secondary"/>
         </View>
       </View> 
     </TouchableOpacity>
@@ -521,7 +521,7 @@ const AllScreen = ({route}) => {
       <View>
         <Text style={styles.mytext}>All Projects</Text>
         <TouchableOpacity onPress={fetchProjects} style={{ alignSelf: 'flex-end', marginTop: -10 }}>
-          <Icon name="refresh" size={20} color="#3498db" style={{ marginRight: 20, marginTop: -20, marginBottom: 5 }} />
+          <Icon name="refresh" size={20} color='#a832ff' style={{ marginRight: 20, marginTop: -20, marginBottom: 5 }} />
         </TouchableOpacity>
 
         <FlatList
@@ -636,13 +636,14 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   taskCard: {
-    backgroundColor: '#f0ffff',
-      padding: 10,
-      margin: 3,
-      marginLeft: 2,
-      borderRadius: 5,
-      borderWidth: 1,
-      borderColor: '#000', // Black border
+    backgroundColor: 'white',
+    padding: 10,
+    margin: 5,
+    marginLeft: 2,
+    borderRadius: 10,
+    borderWidth: 3,
+    borderColor: '#a832ff', // Neon-ish purple border color
+    marginBottom: 12,
   },
   taskName: {
     fontSize: 18,
