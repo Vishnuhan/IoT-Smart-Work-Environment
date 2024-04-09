@@ -10,6 +10,7 @@ const AddProject = () => {
   const [dueDate, setDueDate] = useState('');
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [notification, setNotification] = useState({ visible: false, message: '', theme: 'light' });
+  const API_URL = 'https://capstone-cmml.onrender.com';
 
   const showNotification = (message, theme = 'light') => {
     setNotification({ visible: true, message, theme });
@@ -33,7 +34,7 @@ const AddProject = () => {
         Team: teamArray,
       };
 
-      await axios.post('http://localhost:3001/auth/projects', projectData);
+      await axios.post(`${API_URL}/auth/projects`, projectData);
       showNotification('Project successfully added!', 'green');
     } catch (error) {
       showNotification('Project was not added!', 'red');

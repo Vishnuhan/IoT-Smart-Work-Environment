@@ -11,9 +11,11 @@ const TemperaturesPage = ({ route }) => {
     getTemperature();
   }, []);
 
+  const url = 'https://capstone-cmml.onrender.com'
+
   const getTemperature = async () => {
     try {
-      const response = await axios.get("http://localhost:3001/auth/temperature");
+      const response = await axios.get(`${url}/auth/temperature`);
       setTempValue(response.data);
       if (response.data >= 15) {
         setTempColor("hot");
@@ -47,7 +49,7 @@ const TemperaturesPage = ({ route }) => {
 
   const saveTemp = async (currentTemp) => {
     try {
-      const response = await axios.post("http://localhost:3001/auth/savetemperature", { temperature: currentTemp });
+      const response = await axios.post(`${url}/savetemperature`, { temperature: currentTemp });
       setTempValue(response.data.temperature);
     } catch (error) {
       console.error(`Error saving temperature: ${error}`);

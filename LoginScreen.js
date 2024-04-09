@@ -19,12 +19,12 @@ const LoginScreen = ({ navigation }) => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [error, setError] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
-
+  const url = 'https://capstone-cmml.onrender.com'
+  
   const handleLogin = async () => {
     try {
       const loginData = { employeeId, password };
-      const response = await axios.post('https://capstone-cmml.onrender.com/auth/login', loginData);
-    //  const response = await axios.post('http://localhost:3001/auth/login', loginData);
+      const response = await axios.post(`${url}/auth/login`, loginData);
 
       if (employeeId === 'admin' && password === 'admin') {
         navigation.navigate('Account', { employeeID: employeeId });
