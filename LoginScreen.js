@@ -128,7 +128,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: '#fff',
     elevation: 4,
-    height: '60%',
+    borderWidth: 3,
+    borderColor: '#a832ff', // Neon-ish purple border color
+    height: '65%',
   },
   title: {
     fontSize: 27,

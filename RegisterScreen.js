@@ -136,6 +136,8 @@ const styles = StyleSheet.create({
   },
   card: {
     padding: 5,
+    borderWidth: 3,
+    borderColor: '#a832ff', // Neon-ish purple border color
   },
 });
 
