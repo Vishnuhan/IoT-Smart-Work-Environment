@@ -21,6 +21,8 @@ import AddProjectPage from './AddProjectPage'; // Adjust the import path as need
 import TaskToggle from './TaskToggle'; // Import the TaskToggle component
 import NotificationBar from './NotificationBar';
 import CircularProgress from '@mui/material/CircularProgress';
+import { useFocusEffect } from '@react-navigation/native';
+
 
 // const API_URL = 'https://capstone-cmml.onrender.com'; // Define your API URL here
 const API_URL = 'http://localhost:3001'; // Define your API URL here
@@ -543,19 +545,24 @@ const AllScreen = ({route}) => {
     }
   };
 
-  useEffect(() => {
-    fetchProjects();
-  }, []);
+  // useEffect(() => {
+  //   fetchProjects();
+  // }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchProjects();
+      // The empty array ensures this effect runs only once upon focusing
+    }, [])
+  );
 
-  console.log(projects)
 
   return (
     <ScrollView>
       <View>
-        <Text style={styles.mytext}>All Projects</Text>
-        <TouchableOpacity onPress={fetchProjects} style={{ alignSelf: 'flex-end', marginTop: -10 }}>
+        {/* <Text style={styles.mytext}>All Projects</Text> */}
+        {/* <TouchableOpacity onPress={fetchProjects} style={{ alignSelf: 'flex-end', marginTop: -10 }}>
           <Icon name="refresh" size={20} color='#a832ff' style={{ marginRight: 20, marginTop: -20, marginBottom: 5 }} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <FlatList
           style={{ flex: 1 }}
@@ -589,7 +596,7 @@ const OngoingScreen = ({ route }) => {
   return (
     <ScrollView>
       <View>
-        <Text style={styles.mytext}>Ongoing Projects</Text>
+        {/* <Text style={styles.mytext}>Ongoing Projects</Text> */}
         <FlatList
           data={projects}
           keyExtractor={(item) => item.Name}
@@ -621,7 +628,7 @@ const CompletedScreen = ({ route }) => {
   return (
     <ScrollView>
       <View>
-        <Text style={styles.mytext}>Completed Projects</Text>
+        {/* <Text style={styles.mytext}>Completed Projects</Text> */}
         <FlatList
           data={projects}
           keyExtractor={(item) => item.Name}
@@ -648,7 +655,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 20,
     padding: 20,
-    marginVertical: 8,
+    marginVertical: 12,
     marginHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
