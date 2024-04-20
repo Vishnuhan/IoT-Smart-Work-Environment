@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity,Platform, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity,Platform, Image, TextInput, StyleSheet } from 'react-native';
 import { Button, Card, Title, Paragraph, IconButton } from 'react-native-paper';
 import BottomTabNavigator from './BottomTabNavigator';
 import { useNavigation } from '@react-navigation/native';
@@ -52,6 +52,10 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <Image
+        source={require('./images/desk-synergy1.png')} // Adjust the path based on your project structure
+        style={styles.logo}
+      />
       <Text style={styles.title}>Welcome, Glad to see you!</Text>
       <TextInput
         style={styles.input}
@@ -139,6 +143,11 @@ const styles = StyleSheet.create({
   error: {
     color: 'red',
     marginTop: 10,
+  },
+  logo: {
+    width: 200,
+    height: 200,
+    marginBottom: 20,
   },
 });
 export default LoginScreen;

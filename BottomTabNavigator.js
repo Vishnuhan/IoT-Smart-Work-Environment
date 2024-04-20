@@ -17,7 +17,7 @@ const BottomTabNavigator = ({ route }) => {
   return (
     <Tab.Navigator
       tabBarOptions={{
-        activeTintColor: '#3498db',
+        activeTintColor: '#a832ff',
         inactiveTintColor: 'gray',
         labelStyle: {
           fontSize: 14,

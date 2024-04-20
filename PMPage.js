@@ -918,9 +918,10 @@ const styles = StyleSheet.create({
 
   mytext: {
     fontWeight: 'bold',
-    fontSize: 15,
+    fontSize: 20,
     margin: 5,
-    marginRight: 5
+    marginRight: 5,
+    marginLeft: 22,
   },
 
   // Add the new styles
@@ -1086,7 +1087,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 3,
-    marginTop: 25
+    marginTop: 12
   },
   progressBarContainer: {
     height: 10,
@@ -1106,7 +1107,7 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: '100%',
-    backgroundColor: '#4caf50',
+    backgroundColor: '#a832ff',
     borderRadius: 5, // Optional if you want the bar to have rounded corners
   },
   cardDetailText: {
@@ -1121,6 +1122,10 @@ const styles = StyleSheet.create({
   //   paddingTop: 20, // Space from the top of the container
   //   backgroundColor: '#FFFFFF', // Background color of the overall screen
   // },
+
+  progressCircle:{
+    color: '#a832ff'
+  }
 
 });
 

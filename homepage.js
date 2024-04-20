@@ -31,10 +31,9 @@ const Homepage = ({ navigation }) => {
   return (
     <View style={containerStyle}>
       <Image
-        source={require('./images/desk-synergy.png')} // Adjust the path based on your project structure
+        source={require('./images/desk-synergy1.png')} // Adjust the path based on your project structure
         style={styles.logo}
       />
-      <Text style={styles.title}>DeskSynergy</Text>
       <TouchableOpacity style={styles.button} onPress={handleLoginClick}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
@@ -90,6 +89,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#8E2DE2',
     fontWeight: 'bold',
+    fontSize: 20,
   },
   guestText: {
     color: '#ffffff',
