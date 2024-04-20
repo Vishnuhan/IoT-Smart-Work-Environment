@@ -1123,6 +1123,7 @@ const styles = StyleSheet.create({
   //   backgroundColor: '#FFFFFF', // Background color of the overall screen
   // },
 
+  // same color theme
   progressCircle:{
     color: '#a832ff'
   }
