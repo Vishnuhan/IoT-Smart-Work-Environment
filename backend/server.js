@@ -548,7 +548,7 @@ notiRoutes.patch('/notifications/read', async (req, res) => {
 
 notiRoutes.delete('/notifications/delete', async (req, res) => {
   const { title } = req.query;
-  
+  console.log('in the notifications', title)
   try {
     // Delete the notification by title
     const notificationDeleted = await Notification.findOneAndDelete({ title: title });
