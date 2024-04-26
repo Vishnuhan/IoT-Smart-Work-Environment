@@ -86,8 +86,8 @@ const styles = StyleSheet.create({
   },
   actionText: {
     fontSize: 16,
-    fontWeight: '500',
     color: '#333',
+    fontWeight: 'bold'
   },
 });
 
