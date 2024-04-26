@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   bookButton: {
-    backgroundColor: '#1e90ff', // This is a blue color, change as needed.
+    backgroundColor: '#a832ff', // This is a blue color, change as needed.
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 20,

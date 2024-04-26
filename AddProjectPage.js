@@ -249,7 +249,7 @@ inputContainer: {
 input: {
   marginBottom: 10,
   borderWidth: 1,
-  borderColor: '#ccc', // Light grey border for input fields
+  borderColor: '#a832ff', // Light grey border for input fields
   borderRadius: 5,
   padding: 10,
   backgroundColor: '#fff', // White background for input fields
@@ -292,6 +292,9 @@ closeButton: {
   color: '#000',
   fontWeight: 'bold',
 },
+
+Button: {borderRadius: 5}
+
 });
 
 export default AddProject;

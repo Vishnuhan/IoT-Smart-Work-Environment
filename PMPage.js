@@ -810,17 +810,19 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   updateButton: {
-    backgroundColor: '#2ecc71', // Green background color
+    backgroundColor: '#a832ff', // Green background color
     padding: 12,
     borderRadius: 8,
     marginTop: 10,
-    marginBottom: 20,
+    marginBottom: 10,
+
   },
   addButtonText: {
     color: '#ffffff',
     textAlign: 'center',
     fontWeight: 'bold',
     fontSize: 16,
+    backgroundColor: '#a832ff',
   },
   modalContainer: {
     flex: 1,
@@ -841,13 +843,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
     padding: 4,
-    backgroundColor: '#3498db', // Header background color
+    backgroundColor: '#a832ff', // Header background color
     color: '#fff', // Header text color
     textAlign: 'center',
+    borderRadius: 5,
   },
   inputField: {
     height: 40,
-    borderColor: '#ccc',
+    borderColor: '#a832ff',
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 10,
@@ -976,19 +979,19 @@ const styles = StyleSheet.create({
     width: '40%',
     backgroundColor: '#ecf0f1',
   },
-  inputField: {
-    borderWidth: 1,
-    borderColor: '#bdc3c7',
-    borderRadius: 5,
-    padding: 10,
-    marginVertical: 5,
-  },
-  updateButton: {
-    backgroundColor: '#3498db',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
-  },
+  // inputField: {
+  //   borderWidth: 1,
+  //   borderColor: '#bdc3c7',
+  //   borderRadius: 5,
+  //   padding: 10,
+  //   marginVertical: 5,
+  // },
+  // updateButton: {
+  //   backgroundColor: '#3498db',
+  //   padding: 10,
+  //   borderRadius: 5,
+  //   marginTop: 10,
+  // },
   sampleEmployee: {
     marginBottom: 5,
   },
