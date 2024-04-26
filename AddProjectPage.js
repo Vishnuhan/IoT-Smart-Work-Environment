@@ -5,12 +5,13 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker'; // This is
 
 const AddProject = () => {
   const [projectName, setProjectName] = useState('');
-  const [percentageComplete, setPercentageComplete] = useState('');
+  // const [percentageComplete, setPercentageComplete] = useState('');
   const [team, setTeam] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [notification, setNotification] = useState({ visible: false, message: '', theme: 'light' });
   const API_URL = 'https://capstone-cmml.onrender.com';
+  // const API_URL = 'http://localhost:3001';
 
   const showNotification = (message, theme = 'light') => {
     setNotification({ visible: true, message, theme });
@@ -20,7 +21,7 @@ const AddProject = () => {
   };
 
   const handleAddProject = async () => {
-    if (!projectName || !percentageComplete || !team || !dueDate) {
+    if (!projectName || !team || !dueDate) {
       showNotification('TextFields cannot be empty', 'red');
       return;
     }
@@ -29,7 +30,7 @@ const AddProject = () => {
       const teamArray = team.split(',').map(item => item.trim());
       const projectData = {
         Name: projectName,
-        Percentage_Complete: parseFloat(percentageComplete),
+        // Percentage_Complete: parseFloat(percentageComplete),
         Due_Date: dueDate,
         Team: teamArray,
       };
@@ -59,126 +60,7 @@ const AddProject = () => {
     setShowDatePicker(false); // Hide the date picker
   };
 
-  
-  
-//   return (
-//     <View style={styles.container}>
-//       {notification.visible && (
-//         <View style={[styles.notification, { backgroundColor: notification.theme === 'red' ? '#FFCCCC' : '#CCFFCC' }]}>
-//           <Text style={styles.notificationText}>{notification.message}</Text>
-//           <TouchableOpacity onPress={() => setNotification({ visible: false, message: '', theme: 'light' })}>
-//             <Text style={styles.closeButton}>X</Text>
-//           </TouchableOpacity>
-//         </View>
-//       )}
-//       <Text style={styles.title}>Add New Project</Text>
-//       <TextInput
-//         style={styles.input}
-//         placeholder="Project Name"
-//         value={projectName}
-//         onChangeText={setProjectName}
-//       />
-//       <TextInput
-//         style={styles.input}
-//         placeholder="Percentage Complete"
-//         keyboardType="numeric"
-//         value={percentageComplete}
-//         onChangeText={setPercentageComplete}
-//       />
-//       <TextInput
-//         style={styles.input}
-//         placeholder="Team (Comma-separated)"
-//         value={team}
-//         onChangeText={setTeam}
-//       />
-//       <TextInput
-//         style={styles.input}
-//         placeholder="Due Date"
-//         value={dueDate}
-//         onChangeText={setDueDate}
-//       />
 
-// {/* <View style={styles.datePickerRow}>
-//         <TextInput
-//           style={[styles.input, styles.dateInput]}
-//           placeholder="Due Date"
-//           value={dueDate}
-//           onChangeText={() => {}} // The date is set by the date picker, not manual edit
-//           editable={false} // Make the text input non-editable
-//         />
-//         <TouchableOpacity onPress={showDatePicker} style={styles.calendarButton}>
-//           <Text style={styles.calendarText}>📅</Text>
-//         </TouchableOpacity>
-//       </View> */}
-
-//       <DateTimePickerModal
-//         isVisible={isDatePickerVisible}
-//         mode="date"
-//         onConfirm={handleConfirmDate}
-//         onCancel={hideDatePicker}
-//       />
-//       <Button title="Add Project" onPress={handleAddProject} />
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     padding: 20,
-//   },
-//   title: {
-//     fontSize: 20,
-//     fontWeight: 'bold',
-//     marginBottom: 20,
-//   },
-//   input: {
-//     width: '100%',
-//     marginBottom: 10,
-//     borderWidth: 1,
-//     borderColor: 'gray',
-//     borderRadius: 5,
-//     padding: 10,
-//   },
-//   datePickerRow: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     width: '100%',
-//   },
-//   dateInput: {
-//     flex: 1,
-//   },
-//   calendarButton: {
-//     borderWidth: 1,
-//     borderColor: 'gray',
-//     borderRadius: 5,
-//     padding: 10,
-//     marginLeft: 5,
-//   },
-//   calendarText: {
-//     fontSize: 18,
-//   },
-//   notification: {
-//     position: 'absolute',
-//     top: 0,
-//     left: 0,
-//     right: 0,
-//     padding: 20,
-//     alignItems: 'center',
-//     justifyContent: 'space-between',
-//     flexDirection: 'row',
-//     zIndex: 1000,
-//   },
-//   notificationText: {
-//     color: '#000',
-//   },
-//   closeButton: {
-//     color: '#000',
-//     fontWeight: 'bold',
-//   },
-// });
 
 return (
   <View style={styles.container}>
@@ -198,13 +80,13 @@ return (
         value={projectName}
         onChangeText={setProjectName}
       />
-      <TextInput
+      {/* <TextInput
         style={styles.input}
         placeholder="Percentage Complete"
         keyboardType="numeric"
         value={percentageComplete}
         onChangeText={setPercentageComplete}
-      />
+      /> */}
       <TextInput
         style={styles.input}
         placeholder="Team (Comma-separated)"
@@ -223,38 +105,61 @@ return (
         onConfirm={handleConfirmDate}
         onCancel={hideDatePicker}
       />
-      <Button title="Add Project" onPress={handleAddProject} color="#a832ff" />
+      <TouchableOpacity style={styles.button} onPress={handleAddProject}>
+  <Text style={styles.buttonText}>Add Project</Text>
+</TouchableOpacity>
     </View>
   </View>
 );
 };
 
 const styles = StyleSheet.create({
-container: {
-  flex: 1,
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: 20,
-  backgroundColor: '#f4f4f4', // Light grey background for the whole page
-},
-title: {
-  fontSize: 24,
-  fontWeight: 'bold',
-  color: '#333', // Dark text for better contrast
-  marginBottom: 20,
-},
+  container: {
+    flex: 1,
+    justifyContent: 'flex-start', // Aligns form to the top of the screen
+    alignItems: 'stretch', // Stretches the items to the sides
+    paddingTop: 50, // Adds space at the top
+    paddingHorizontal: 20, // Adds horizontal padding
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: '#333', // Dark text color for contrast
+  },
+  input: {
+    height: 50, // Increases the height for better touch area
+    width: '100%', // Ensures input stretches to the full width
+    backgroundColor: '#fff', // White background for the input
+    borderColor: '#a832ff', // Purple border color to match the theme
+    borderWidth: 1,
+    marginBottom: 16,
+    paddingLeft: 20, // Adds left padding inside the input
+    borderRadius: 25, // Rounds the corners
+    fontSize: 16, // Increases font size
+    color: '#333', // Dark text color for contrast
+  },
+  // Add styles for the date picker input if necessary
+  // ... other styles
+  button: {
+    backgroundColor: '#a832ff', // Purple button to match the accent color in the app
+    borderRadius: 35, // Rounds the corners
+    height: 50, // Sets a fixed height for consistency
+    justifyContent: 'center', // Centers the button text vertically
+    alignItems: 'center', // Centers the button text horizontally
+    elevation: 3, // Adds a subtle shadow on Android
+    marginTop: 16, // Adds margin to the top
+  },
+  buttonText: {
+    color: '#fff', // White text color
+    fontSize: 18, // Increases font size
+    fontWeight: 'bold', // Makes the text bold
+  }, 
+
 inputContainer: {
   width: '100%',
 },
-input: {
-  marginBottom: 10,
-  borderWidth: 1,
-  borderColor: '#a832ff', // Light grey border for input fields
-  borderRadius: 5,
-  padding: 10,
-  backgroundColor: '#fff', // White background for input fields
-  color: '#333', // Dark text for inputs
-},
+
 datePickerRow: {
   flexDirection: 'row',
   alignItems: 'center',
@@ -293,7 +198,6 @@ closeButton: {
   fontWeight: 'bold',
 },
 
-Button: {borderRadius: 5}
 
 });
 

@@ -10,8 +10,8 @@ const AddNotification = () => {
   const [time, setTime] = useState('');
   const [employees, setEmployees] = useState('');
   const navigation = useNavigation();
-  // const url = 'https://capstone-cmml.onrender.com'
-  const url = 'http://localhost:3001'
+  const url = 'https://capstone-cmml.onrender.com'
+  // const url = 'http://localhost:3001'
 
   const handleAddNotification = async () => {
    
