@@ -21,7 +21,7 @@
     "util": "^0.12.5"
   },
   "engines": {
-    "node": "14.x"
+    "node": "18.x"
   },
   "repository": {
     "type": "git",
