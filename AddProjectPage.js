@@ -10,8 +10,8 @@ const AddProject = () => {
   const [dueDate, setDueDate] = useState('');
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [notification, setNotification] = useState({ visible: false, message: '', theme: 'light' });
-  const API_URL = 'https://capstone-cmml.onrender.com';
-  // const API_URL = 'http://localhost:3001';
+  // const API_URL = 'https://capstone-cmml.onrender.com';
+  const API_URL = 'http://localhost:3001';
 
   const showNotification = (message, theme = 'light') => {
     setNotification({ visible: true, message, theme });

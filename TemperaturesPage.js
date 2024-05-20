@@ -11,7 +11,9 @@ const TemperaturesPage = ({ route }) => {
     getTemperature();
   }, []);
 
-  const url = 'https://capstone-cmml.onrender.com'
+  // const url = 'https://capstone-cmml.onrender.com'
+
+  const url = 'http://localhost:3001'
 
   const getTemperature = async () => {
     try {

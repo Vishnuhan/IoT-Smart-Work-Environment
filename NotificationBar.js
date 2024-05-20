@@ -11,8 +11,8 @@ const NotificationBar = ({ route }) => {
   const [notifications, setNotifications] = useState([]);
   const { employeeId } = route.params;
   const navigation = useNavigation();
-  const url = 'https://capstone-cmml.onrender.com'
-  // const url = 'http://localhost:3001'
+  // const url = 'https://capstone-cmml.onrender.com'
+  const url = 'http://localhost:3001'
 
   // Function to fetch notifications
   const fetchNotifications = async () => {

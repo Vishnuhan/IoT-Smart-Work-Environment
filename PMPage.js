@@ -24,8 +24,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { useFocusEffect } from '@react-navigation/native';
 
 
-const API_URL = 'https://capstone-cmml.onrender.com'; // Define your API URL here
-// const API_URL = 'http://localhost:3001'; // Define your API URL here
+// const API_URL = 'https://capstone-cmml.onrender.com'; // Define your API URL here
+const API_URL = 'http://localhost:3001'; // Define your API URL here
 
 
 
@@ -518,29 +518,62 @@ const ProjectDetailsScreen = ({ route }) => {
   //Calculate phase and phase percentage data by querying the backend, for the projects just like before, and setting the value for the PHASE variable.
   console.log(project)
 
-  return (
-    <ScrollView>
-      <View>
-        <Text style={styles.mytext}>Project Phases</Text>
-        <FlatList
-          data={PHASES}
-          keyExtractor={(item) => item.name}
-          renderItem={({ item }) => renderPhaseCard(navigation, item, project.Name, project)}
-          scrollEnabled={false} // Disables scrolling for the FlatList, since it's inside a ScrollView
-        />
-        <Text style={styles.mytext}>Progress Chart</Text>
-        <BarChart
-          data={data}
-          width={chartWidth}
-          height={220}
-          yAxisLabel=""
-          chartConfig={chartConfig}
-          verticalLabelRotation={0}
-          style={styles.chartStyle}
-        />
+  const renderHeader = () => (
+    <View>
+      <Text style={styles.mytext}>Project Phases</Text>
+    </View>
+  );
+
+  const renderFooter = () => (
+    <View>
+      <Text style={styles.mytext}>Progress Chart</Text>
+      <BarChart
+        data={data}
+        width={chartWidth}
+        height={220}
+        yAxisLabel=""
+        chartConfig={chartConfig}
+        verticalLabelRotation={0}
+        style={styles.chartStyle}
+      />
+    </View>
+  );
+
+  // return (
+  //   <ScrollView>
+  //     <View>
+  //       <Text style={styles.mytext}>Project Phases</Text>
+  //       <FlatList
+  //         data={PHASES}
+  //         keyExtractor={(item) => item.name}
+  //         renderItem={({ item }) => renderPhaseCard(navigation, item, project.Name, project)}
+  //         scrollEnabled={false} // Disables scrolling for the FlatList, since it's inside a ScrollView
+  //       />
+  //       <Text style={styles.mytext}>Progress Chart</Text>
+  //       <BarChart
+  //         data={data}
+  //         width={chartWidth}
+  //         height={220}
+  //         yAxisLabel=""
+  //         chartConfig={chartConfig}
+  //         verticalLabelRotation={0}
+  //         style={styles.chartStyle}
+  //       />
          
-      </View>
-    </ScrollView>
+  //     </View>
+  //   </ScrollView>
+  // );
+  return (
+    <FlatList
+      data={PHASES}
+      keyExtractor={(item) => item.name}
+      renderItem={({ item }) => renderPhaseCard(navigation, item, project.Name, project)}
+      ListHeaderComponent={renderHeader}
+      ListFooterComponent={renderFooter}
+      // if your phases list is short, consider adding this to improve scrolling behavior
+      showsVerticalScrollIndicator={true}
+      scrollEnabled={true}
+    />
   );
 };
 

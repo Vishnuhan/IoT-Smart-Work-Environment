@@ -5,8 +5,8 @@ import { useNavigation } from '@react-navigation/native';
 const AccountPage = ({ route }) => {
   const navigation = useNavigation();
   const { employeeName, employeePic } = route.params;
-  // const API_URL = 'http://localhost:3001'
- const API_URL = 'https://capstone-cmml.onrender.com'
+  const API_URL = 'http://localhost:3001'
+//  const API_URL = 'https://capstone-cmml.onrender.com'
   
   const handleLogout = () => {
     // Logout logic here

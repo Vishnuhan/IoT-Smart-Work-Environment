@@ -97,8 +97,8 @@ const RoomListScreen = () => {
 
     const navigation = useNavigation();
     const [roomsData, setRoomsData] = useState([]);
-    const API_URL = 'https://capstone-cmml.onrender.com/auth/rooms' // Replace with your actual API URL
-    // const API_URL = 'http://localhost:3001/auth/rooms'; // Replace with your actual API URL
+    // const API_URL = 'https://capstone-cmml.onrender.com/auth/rooms' // Replace with your actual API URL
+    const API_URL = 'http://localhost:3001/auth/rooms'; // Replace with your actual API URL
   
     useEffect(() => {
       const fetchRoomsData = async () => {

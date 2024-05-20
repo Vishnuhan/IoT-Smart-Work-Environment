@@ -16,8 +16,8 @@ const NewMeetingScreen = ({route}) => {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [notification, setNotification] = useState({ visible: false, message: '', theme: 'light' });
 
-  const API_URL = 'https://capstone-cmml.onrender.com';
-  // const API_URL = 'http://localhost:3001';
+  // const API_URL = 'https://capstone-cmml.onrender.com';
+  const API_URL = 'http://localhost:3001';
 
   const timeSlots = [
     '09:00AM', '10:00AM', '11:00AM',
