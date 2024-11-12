@@ -20,6 +20,9 @@ https://docs.google.com/document/d/1uZbmDVLqCb8FDmRxZIdlWywzlvmDPpz_/edit?usp=sh
 ### Tasks Page
 <img src="Tasks.png" alt="Tasks Page" width="300" />
 
+### AI Suggestions Tab
+<img src="AI.png" alt="AI Page" width="300" />
+
 ### Notification Tab
 <img src="Notifications.png" alt="Notification Tab" width="300" />
 
